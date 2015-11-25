@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>AttnMngApp</title>
+  <title><%= yield(:title) %> | 株式会社Linkage - 勤怠管理システム</title>
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
 </head>
 <body>
-
-<%= yield %>
-
+  <%= yield %>
 </body>
 </html>
