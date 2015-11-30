@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  biz_date: 2015-11-30
+  attn_ctgr: 1
+  work_start_time: 2015-11-30 15:17:30
+  work_end_time: 2015-11-30 15:17:30
+  rest_start_time: 2015-11-30 15:17:30
+  rest_end_time: 2015-11-30 15:17:30
+
+two:
+  biz_date: 2015-11-30
+  attn_ctgr: 1
+  work_start_time: 2015-11-30 15:17:30
+  work_end_time: 2015-11-30 15:17:30
+  rest_start_time: 2015-11-30 15:17:30
+  rest_end_time: 2015-11-30 15:17:30

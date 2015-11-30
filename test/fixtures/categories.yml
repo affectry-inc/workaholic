@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  ctgr_id: 1
+  lang_id: 1
+  val: 1
+  name: MyString
+
+two:
+  ctgr_id: 1
+  lang_id: 1
+  val: 1
+  name: MyString

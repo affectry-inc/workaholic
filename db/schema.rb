@@ -11,7 +11,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151128043403) do
+ActiveRecord::Schema.define(version: 20151130114831) do
+
+  create_table "categories", force: :cascade do |t|
+    t.integer  "ctgr_id"
+    t.integer  "lang_id"
+    t.integer  "val"
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "languages", force: :cascade do |t|
+    t.integer  "lang_id"
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "timecards", force: :cascade do |t|
+    t.date     "biz_date"
+    t.integer  "attn_ctgr"
+    t.time     "work_start_time"
+    t.time     "work_end_time"
+    t.time     "rest_start_time"
+    t.time     "rest_end_time"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.integer  "user_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string   "name"
