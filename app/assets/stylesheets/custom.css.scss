@@ -113,6 +113,9 @@ footer {
   @include box_sizing;
 }
 
+th.centerized, td.centerized {
+  text-align: center;
+}
 
 /* sidebar */
 

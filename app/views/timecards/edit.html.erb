@@ -1,10 +1,17 @@
 <% provide(:title, '勤怠入力') %>
 <h1>勤怠入力</h1>
 
-<h1><%= Date.today.to_s + "  " + Time.now.strftime('%H:%M') %></h1>
+<h1>
+  <%= content_tag :span, @timecard.biz_date.to_s %>
+  <%= content_tag :span, '     ' %>
+  <%= content_tag :span, Time.now.strftime('%H:%M') , id: "cur_time" %>
+</h1>
+
 <div class="row">
   <div class="col-md-6 col-md-offset-3">
     <%= form_for(@timecard) do |f| %>
+      <%= f.hidden_field :biz_date, value: @timecard.biz_date %>
+
       <%= f.label :attn_ctg, "勤怠区分"  %>
       <%= f.collection_select :attn_ctgr, 
                      Category.where("ctgr_id = ? and lang_id = ?", 0, 0),
@@ -13,9 +20,12 @@
       <div class="form-group">
         <%= f.label :work_start_time, "勤務開始時刻" %>
         <div class = "input-group">
-          <%= f.text_field :work_start_time, class: 'form-control' %>
+          <%= f.text_field :work_start_time, value: @timecard.work_start_time.to_s(:h_colon_m), class: 'form-control' %>
           <span class = "input-group-btn">
-            <button class = "btn btn-default" type = "button">　　　打刻　　　
+            <button class = "btn btn-default" type = "button"
+	     onclick = "document.getElementById('timecard_work_start_time').value
+	                               = document.getElementById('cur_time').innerHTML ">
+	      　　　打刻　　　
             </button>
           </span>
         </div>
@@ -24,9 +34,12 @@
       <div class="form-group">
         <%= f.label :work_end_time, "勤務終了時刻" %>
         <div class = "input-group">
-          <%= f.text_field :work_end_time, class: 'form-control' %>
+          <%= f.text_field :work_end_time, value: @timecard.work_end_time.to_s(:h_colon_m), class: 'form-control' %>
           <span class = "input-group-btn">
-            <button class = "btn btn-default" type = "button">　　　打刻　　　
+            <button class = "btn btn-default" type = "button"
+	     onclick = "document.getElementById('timecard_work_end_time').value
+	                               = document.getElementById('cur_time').innerHTML ">
+	      　　　打刻　　　
             </button>
           </span>
         </div>
@@ -35,9 +48,12 @@
       <div class="form-group">
         <%= f.label :rest_start_time, "休憩開始時刻" %>
         <div class = "input-group">
-          <%= f.text_field :rest_start_time, class: 'form-control' %>
+          <%= f.text_field :rest_start_time, value: @timecard.rest_start_time.to_s(:h_colon_m), class: 'form-control' %>
           <span class = "input-group-btn">
-            <button class = "btn btn-default" type = "button">　　　打刻　　　
+            <button class = "btn btn-default" type = "button"
+	     onclick = "document.getElementById('timecard_rest_start_time').value
+	                               = document.getElementById('cur_time').innerHTML ">
+	      　　　打刻　　　
             </button>
           </span>
         </div>
@@ -46,9 +62,12 @@
       <div class="form-group">
         <%= f.label :rest_end_time, "休憩終了時刻" %>
         <div class = "input-group">
-          <%= f.text_field :rest_end_time, class: 'form-control' %>
+          <%= f.text_field :rest_end_time, value: @timecard.rest_end_time.to_s(:h_colon_m), class: 'form-control' %>
           <span class = "input-group-btn">
-            <button class = "btn btn-default" type = "button">　　　打刻　　　
+            <button class = "btn btn-default" type = "button"
+	     onclick = "document.getElementById('timecard_rest_end_time').value
+	                               = document.getElementById('cur_time').innerHTML ">
+	      　　　打刻　　　
             </button>
           </span>
         </div>

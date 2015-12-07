@@ -6,8 +6,13 @@ Rails.application.routes.draw do
   get    'login'   => 'sessions#new'
   post   'login'   => 'sessions#create'
   delete 'logout'  => 'sessions#destroy'
+  get 'timecards' => 'timecards#index'
+  post 'timecards' => 'timecards#create'
+  get 'timecards/new' => 'timecards#new', as: :new_timecard
+  get 'timecards/:id/edit' => 'timecards#edit', as: :edit_timecard
+  patch 'timecards/:id' => 'timecards#update', as: :timecard
   resources :users
-  resources :timecards
+
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
