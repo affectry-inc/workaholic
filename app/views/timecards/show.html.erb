@@ -1,0 +1,40 @@
+<% provide(:title, '勤怠詳細') %>
+<h1>勤怠入力</h1>
+
+<h1>
+  <%= content_tag :span, @timecard.biz_date.to_s %>
+</h1>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <%= form_for(@timecard) do |f| %>
+      <div class="form-group">
+        <%= f.label :attn_ctgr, "勤怠区分"  %>
+        <%= f.text_field :attn_ctgr, value: Category.find_by(ctgr_id: 0, lang_id: 0, val: @timecard.attn_ctgr).name, class: 'form-control', disabled: true %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :work_start_time, "勤務開始時刻" %>
+        <%= f.text_field :work_start_time, value: @timecard.work_start_time.to_s(:h_colon_m), class: 'form-control', disabled: true %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :work_end_time, "勤務終了時刻" %>
+        <%= f.text_field :work_end_time, value: @timecard.work_end_time.to_s(:h_colon_m), class: 'form-control', disabled: true %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :rest_start_time, "休憩開始時刻" %>
+        <%= f.text_field :rest_start_time, value: @timecard.rest_start_time.to_s(:h_colon_m), class: 'form-control', disabled: true %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :rest_end_time, "休憩終了時刻" %>
+        <%= f.text_field :rest_end_time, value: @timecard.rest_end_time.to_s(:h_colon_m), class: 'form-control', disabled: true %>
+      </div>
+
+        <%= link_to "戻る", timecards_path(year: @timecard.biz_date.year,
+	                                   month: @timecard.biz_date.month), class: "btn btn-block btn-primary" %>
+    <% end %>
+  </div>
+</div>

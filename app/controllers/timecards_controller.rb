@@ -1,5 +1,5 @@
 class TimecardsController < ApplicationController
-  before_action :logged_in_user, only: [:index, :edit]
+  before_action :logged_in_user, only: [:index, :edit, :create, :update]
 
   def index
     if params[:year] == nil
@@ -9,8 +9,14 @@ class TimecardsController < ApplicationController
     end
     e_date = b_date.end_of_month
 
+    if params[:user] == nil
+      user_id = current_user.id
+    else
+      user_id = params[:user]
+    end
+
     @b_date = b_date
-    @timecards = Timecard.where(biz_date: b_date..e_date)
+    @timecards = Timecard.where(biz_date: b_date..e_date).where(user_id: user_id)
     @monthly_timecards = Array.new
     (b_date..e_date).each do |date|
       if @timecards.exists?(biz_date: date)
@@ -33,17 +39,29 @@ class TimecardsController < ApplicationController
     @attn_ctgrs = Category.where("ctgr_id = ? and lang_id = ?", 0, 0)
   end
 
+  def show
+  end
+
   def new
     biz_date = Date.parse(params[:biz_date])
-    @timecard = Timecard.new(biz_date: biz_date, work_start_time: biz_date.to_time,
+    @timecard = Timecard.new(biz_date: biz_date, attn_ctgr: 0,
+                             work_start_time: biz_date.to_time,
                              work_end_time: biz_date.to_time,
 			     rest_start_time: biz_date.to_time,
-			     rest_end_time: biz_date.to_time)
-    render 'edit'
+			     rest_end_time: biz_date.to_time,
+			     user_id: current_user.id)
+
+    if is_editable?(@timecard)
+      render 'edit'
+    else
+      render 'show'
+    end
   end
 
   def edit
     @timecard = Timecard.find(params[:id])
+
+    render 'show' if !is_editable?(@timecard)
   end
 
   def create
@@ -72,6 +90,24 @@ class TimecardsController < ApplicationController
     def timecard_params
       params.require(:timecard).permit(:biz_date, :attn_ctgr, :work_start_time, :work_end_time,
 				       :rest_start_time, :rest_end_time)
+    end
+
+    def is_editable?(timecard)
+      if timecard.user_id == current_user.id
+        timecard.biz_date >= Date.today
+      else
+        has_privilege?(timecard.user_id)
+      end
+    end
+
+    def has_privilege?(user_id)
+      group_ids = GroupMember.where(user_id: user_id).pluck(:group_id)
+      your_priv = Group.order(priv_level: :desc).find(group_ids).first.priv_level
+
+      group_ids = GroupMember.where(user_id: current_user.id).pluck(:group_id)
+      my_priv = Group.order(priv_level: :desc).find(group_ids).first.priv_level
+
+      my_priv < your_priv
     end
 
 end

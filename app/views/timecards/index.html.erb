@@ -21,10 +21,10 @@
 
 <br>
 
-<table class="table table-hover">
+<table class="table">
   <thead>
     <tr align="center">
-      <th class="centerized">日付</th>
+      <th class="centerized" colspan="2">日付</th>
       <th class="centerized">勤怠</th>
       <th class="centerized">業務開始時刻</th>
       <th class="centerized">業務終了時刻</th>
@@ -36,22 +36,43 @@
 
   <tbody>
     <% @monthly_timecards.each do |tc| %>
-      <% if tc.is_new %>
-        <tr data-link="<%= new_timecard_path(biz_date: tc.biz_date) %>" style="cursor: pointer;">
-      <% else %>
-        <tr data-link="<%= edit_timecard_path(tc) %>" style="cursor: pointer;">
-      <% end %>
-        <td class="centerized"><%= tc.biz_date.to_s(:y_slash_m_slash_d) %></td>
-        <td class="centerized"><%= @attn_ctgrs.find_by(val: tc.attn_ctgr).name %></td>
-        <td class="centerized"><%= tc.work_start_time.to_s(:h_colon_m) %></td>
-        <td class="centerized"><%= tc.work_end_time.to_s(:h_colon_m) %></td>
-        <td class="centerized"><%= tc.rest_start_time.to_s(:h_colon_m) %></td>
-        <td class="centerized"><%= tc.rest_end_time.to_s(:h_colon_m) %></td>
-	<% if tc.is_new %>
+      <% if tc.biz_date.wday == 0 || tc.biz_date.wday == 6 %>
+        <tr bgcolor="#a9a9a9">
+          <td class="centerized"><%= tc.biz_date.to_s(:y_slash_m_slash_d) %></td>
+	  <% if tc.biz_date.wday == 0 %>
+            <td style="color: red;"><%= tc.biz_date.strftime("%a") %></td>
+	  <% else %>
+            <td style="color: blue;"><%= tc.biz_date.strftime("%a") %></td>
+	  <% end %>
+          <td class="centerized">休日</td>
           <td class="centerized"></td>
-	<% else %>
-          <td class="centerized"><span class="glyphicon glyphicon-ok"></span></td>
+          <td class="centerized"></td>
+          <td class="centerized"></td>
+          <td class="centerized"></td>
+          <td class="centerized"></td>
+      <% else %>
+        <% if tc.is_new %>
+	  <% data_link = new_timecard_path(biz_date: tc.biz_date) %>
+	  <% span = '' %>
+        <% else %>
+	  <% data_link = edit_timecard_path(tc) %>
+	  <% span = '<span class="glyphicon glyphicon-ok"></span>' %>
         <% end %>
+        <% if tc.biz_date < Date.today  %>
+	  <% bgcolor = 'bgcolor="#d3d3d3"' %>
+	<% else %>
+	  <% bgcolor = '' %>
+	<% end %>
+        <tr class="editable" data-link="<%= data_link %>" style="cursor: pointer;" <%= bgcolor.html_safe %>>
+          <td class="centerized"><%= tc.biz_date.to_s(:y_slash_m_slash_d) %></td>
+          <td><%= tc.biz_date.strftime("%a") %></td>
+          <td class="centerized"><%= @attn_ctgrs.find_by(val: tc.attn_ctgr).name %></td>
+          <td class="centerized"><%= tc.work_start_time.to_s(:h_colon_m) %></td>
+          <td class="centerized"><%= tc.work_end_time.to_s(:h_colon_m) %></td>
+          <td class="centerized"><%= tc.rest_start_time.to_s(:h_colon_m) %></td>
+          <td class="centerized"><%= tc.rest_end_time.to_s(:h_colon_m) %></td>
+          <td class="centerized"><%= span.html_safe %></td>
+      <% end %>
       </tr>
     <% end %>
   </tbody>

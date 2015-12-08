@@ -12,7 +12,7 @@
     <%= form_for(@timecard) do |f| %>
       <%= f.hidden_field :biz_date, value: @timecard.biz_date %>
 
-      <%= f.label :attn_ctg, "勤怠区分"  %>
+      <%= f.label :attn_ctgy, "勤怠区分"  %>
       <%= f.collection_select :attn_ctgr, 
                      Category.where("ctgr_id = ? and lang_id = ?", 0, 0),
                      :val, :name, {}, {class: "form-control selectpicker"} %>

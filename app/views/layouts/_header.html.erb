@@ -3,25 +3,16 @@
     <%= link_to "勤怠管理システム", root_path, id: "logo" %>
     <nav>
       <ul class="nav navbar-nav navbar-right">
-        <li><%= link_to "Home", root_path %></li>
         <% if logged_in? %>
+          <li><%= link_to "Timecards", root_path %></li>
+          <li><%= link_to "Members", '#' %></li>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-	      勤怠<b class="caret"></b>
-            </a>
-            <ul class="dropdown-menu">
-              <li><%= link_to "勤怠入力", root_path %></li>
-              <li><%= link_to "勤怠一覧", root_path %></li>
-            </ul>
-          </li>
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-	      Account<b class="caret"></b>
+	      <%= current_user.name %><b class="caret"></b>
             </a>
             <ul class="dropdown-menu">
               <li><%= link_to "Profile", current_user %></li>
               <li><%= link_to "Settings", '#' %></li>
-              <li><%= link_to "Users", '#' %></li>
               <li class="divider"></li>
               <li>
                 <%= link_to "Log out", logout_path, method: "delete" %>

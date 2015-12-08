@@ -10,7 +10,8 @@ Rails.application.routes.draw do
   post 'timecards' => 'timecards#create'
   get 'timecards/new' => 'timecards#new', as: :new_timecard
   get 'timecards/:id/edit' => 'timecards#edit', as: :edit_timecard
-  patch 'timecards/:id' => 'timecards#update', as: :timecard
+  get 'timecards/:id' => 'timecards#show', as: :timecard
+  patch 'timecards/:id' => 'timecards#update'
   resources :users
 
 
