@@ -3,24 +3,23 @@ class TimecardsController < ApplicationController
 
   def index
     if params[:year] == nil
-      b_date = Date.today.beginning_of_month
+      @b_date = Date.today.beginning_of_month
     else
-      b_date = Date.new(params[:year].to_i, params[:month].to_i, 1)
+      @b_date = Date.new(params[:year].to_i, params[:month].to_i, 1)
     end
-    e_date = b_date.end_of_month
+    e_date = @b_date.end_of_month
 
     if params[:user] == nil
-      user_id = current_user.id
+      @user_id = current_user.id
     else
-      user_id = params[:user]
+      @user_id = params[:user]
     end
 
-    @b_date = b_date
-    @timecards = Timecard.where(biz_date: b_date..e_date).where(user_id: user_id)
+    timecards = Timecard.where(biz_date: @b_date..e_date).where(user_id: @user_id)
     @monthly_timecards = Array.new
-    (b_date..e_date).each do |date|
-      if @timecards.exists?(biz_date: date)
-        tc = @timecards.find_by(biz_date: date)
+    (@b_date..e_date).each do |date|
+      if timecards.exists?(biz_date: date)
+        tc = timecards.find_by(biz_date: date)
 	tc.is_new = false
       else
         tc = Timecard.new
@@ -49,9 +48,9 @@ class TimecardsController < ApplicationController
                              work_end_time: biz_date.to_time,
 			     rest_start_time: biz_date.to_time,
 			     rest_end_time: biz_date.to_time,
-			     user_id: current_user.id)
+			     user_id: params[:user].to_i)
 
-    if is_editable?(@timecard)
+    if editable?(@timecard)
       render 'edit'
     else
       render 'show'
@@ -61,7 +60,7 @@ class TimecardsController < ApplicationController
   def edit
     @timecard = Timecard.find(params[:id])
 
-    render 'show' if !is_editable?(@timecard)
+    render 'show' if !editable?(@timecard)
   end
 
   def create
@@ -92,22 +91,18 @@ class TimecardsController < ApplicationController
 				       :rest_start_time, :rest_end_time)
     end
 
-    def is_editable?(timecard)
-      if timecard.user_id == current_user.id
-        timecard.biz_date >= Date.today
+    def editable?(timecard)
+      if current_user.admin
+        true
+      elsif timecard.user_id == current_user.id && timecard.biz_date >= Date.today
+        true
       else
-        has_privilege?(timecard.user_id)
+        approver_of?(timecard.user_id)
       end
     end
 
-    def has_privilege?(user_id)
-      group_ids = GroupMember.where(user_id: user_id).pluck(:group_id)
-      your_priv = Group.order(priv_level: :desc).find(group_ids).first.priv_level
-
-      group_ids = GroupMember.where(user_id: current_user.id).pluck(:group_id)
-      my_priv = Group.order(priv_level: :desc).find(group_ids).first.priv_level
-
-      my_priv < your_priv
+    def approver_of?(user_id)
+      Approver.where(user_id: user_id).where(approver_user_id: current_user.id).count > 0
     end
 
 end

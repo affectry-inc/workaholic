@@ -1,21 +1,21 @@
 <% provide(:title, '勤怠入力') %>
-<h1><%= @b_date.year %>年<%= @b_date.month %>月　勤怠</h1>
-
-<% prev_month = @b_date.prev_month %>
-<% next_month = @b_date.next_month %>
+<h1><%= @b_date.year %>年<%= @b_date.month %>月</h1>
 
 <div class="center">
   <span class = "btn-group">
-    <% (-6..6).each do |i| %>
-      <% mon = @b_date.months_since(i) %>
-      <% if i == 0 %>
-        <%= link_to mon.to_s(:y_slash_m), timecards_path(year: mon.year, month: mon.month),
-                                        class: "btn btn-default active" %>
+    <%= link_to "<<", timecards_path(user: @user_id, year: @b_date.year-1, month: @b_date.month),
+                      class: "btn btn-default" %>
+    <% (1..12).each do |i| %>
+      <% if i == @b_date.month %>
+        <%= link_to @b_date.year.to_s + "/" + i.to_s, 
+            timecards_path(user: @user_id, year: @b_date.year, month: i), class: "btn btn-default active" %>
       <% else %>
-        <%= link_to mon.to_s(:y_slash_m), timecards_path(year: mon.year, month: mon.month),
-                                        class: "btn btn-default" %>
+        <%= link_to @b_date.year.to_s + "/" + i.to_s, 
+            timecards_path(user: @user_id, year: @b_date.year, month: i), class: "btn btn-default" %>
       <% end %>
     <% end %>
+    <%= link_to ">>", timecards_path(user: @user_id, year: @b_date.year+1, month: @b_date.month),
+                      class: "btn btn-default" %>
   </span>
 </div>
 
@@ -35,6 +35,10 @@
   </thead>
 
   <tbody>
+    <% biz_days = 0 %> <!-- 営業日数 -->
+    <% work_days = 0 %><!-- 勤務日数 -->
+    <% off_days = 0 %><!-- 休暇日数 -->
+    <% work_mins = 0 %><!-- 勤務時間 -->
     <% @monthly_timecards.each do |tc| %>
       <% if tc.biz_date.wday == 0 || tc.biz_date.wday == 6 %>
         <tr bgcolor="#a9a9a9">
@@ -52,7 +56,7 @@
           <td class="centerized"></td>
       <% else %>
         <% if tc.is_new %>
-	  <% data_link = new_timecard_path(biz_date: tc.biz_date) %>
+	  <% data_link = new_timecard_path(biz_date: tc.biz_date, user: @user_id) %>
 	  <% span = '' %>
         <% else %>
 	  <% data_link = edit_timecard_path(tc) %>
@@ -72,9 +76,38 @@
           <td class="centerized"><%= tc.rest_start_time.to_s(:h_colon_m) %></td>
           <td class="centerized"><%= tc.rest_end_time.to_s(:h_colon_m) %></td>
           <td class="centerized"><%= span.html_safe %></td>
+	<% biz_days += 1 %>
+	<% if !tc.is_new && tc.attn_ctgr == 0 %>
+	  <% work_days  += 1 %>
+	  <% work_mins += (tc.work_end_time - tc.work_start_time).divmod(60)[0].to_i %>
+	  <% work_mins -= (tc.rest_end_time - tc.rest_start_time).divmod(60)[0].to_i %>
+	<% end %>
+	<% off_days += 1 if tc.attn_ctgr == 1 %>
       <% end %>
       </tr>
     <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<table class="table table-border">
+  <thead>
+    <tr align="center">
+      <th class="centerized">営業日数</th>
+      <th class="centerized">出勤日数</th>
+      <th class="centerized">休暇日数</th>
+      <th class="centerized">勤務時間</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr align="center">
+      <th class="centerized"><%= biz_days.to_s + " 日" %></th>
+      <th class="centerized"><%= work_days.to_s + " 日" %></th>
+      <th class="centerized"><%= off_days.to_s + " 日" %></th>
+      <% work_hours = work_mins.divmod(60) %>
+      <th class="centerized"><%= work_hours[0].to_s + " 時間 " + "%02d" % work_hours[1] + " 分" %></th>
+    </tr>
   </tbody>
 </table>
 
