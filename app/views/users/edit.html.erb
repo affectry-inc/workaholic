@@ -13,10 +13,10 @@
       <%= f.email_field :email, class: 'form-control', readonly: true %>
 
       <%= f.label :password %>
-      <%= f.password_field :password, class: 'form-control' %>
+      <%= f.password_field :password, class: 'form-control', readonly: true %>
 
       <%= f.label :password_confirmation, "Confirmation" %>
-      <%= f.password_field :password_confirmation, class: 'form-control' %>
+      <%= f.password_field :password_confirmation, class: 'form-control', readonly: true %>
 
       <%= f.submit "更新", class: "btn btn-primary" %>
     <% end %>

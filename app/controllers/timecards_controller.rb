@@ -12,7 +12,7 @@ class TimecardsController < ApplicationController
     if params[:user] == nil
       @user_id = current_user.id
     else
-      @user_id = params[:user]
+      @user_id = params[:user].to_i
     end
 
     timecards = Timecard.where(biz_date: @b_date..e_date).where(user_id: @user_id)
