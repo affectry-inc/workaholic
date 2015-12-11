@@ -1,4 +1,11 @@
 <% provide(:title, '勤怠入力') %>
+
+<% if @user_id != current_user.id %>
+<div style="float: left; margin-top: 20px; margin-left: 50px">
+  <h3><%= User.find(@user_id).name %></h3>
+</div>
+<% end %>
+
 <h1><%= @b_date.year %>年<%= @b_date.month %>月</h1>
 
 <div class="center">

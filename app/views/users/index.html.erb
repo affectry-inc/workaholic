@@ -1,10 +1,35 @@
-<% provide(:title, 'All members') %>
-<h1>All members</h1>
+<% provide(:title, 'Members') %>
+<h1>Members</h1>
 
 <%= will_paginate %>
 
-<ul class="users">
-  <%= render @users %>
-</ul>
+<table class="table">
+  <thead>
+    <tr>
+      <th class="centerized middled"></th>
+      <th class="middled">Name</th>
+      <th class="middled">Email</th>
+      <th class="middled">Tel</th>
+      <% if current_user.admin? && !current_user?(user)%>
+        <th class="centerized middled"></th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+  <% @users.each do |user| %>
+    <tr>
+      <td class="centerized middled"><%= gravatar_for user, size: 50 %></td>
+      <td class="middled"><%= link_to user.name, timecards_path(user: user.id) %></td>
+      <td class="middled"><%= mail_to user.email, user.email %></td>
+      <td class="middled"><a href="tel:0351145685">03-5114-5685</a></td>
+      <% if current_user.admin? && !current_user?(user)%>
+        <td class="centerized middled">
+          |<%= link_to "delete", user, method: :delete, data: {confirm: "You sure?"} %>
+        </td>
+      <% end %>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
 
 <%= will_paginate %>

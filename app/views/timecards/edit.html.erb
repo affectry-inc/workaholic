@@ -34,7 +34,7 @@
 
       <div class="form-group">
         <%= f.label :work_end_time, "勤務終了時刻" %>
-        <div class = "input-group clockpicker">
+        <div class = "input-group clockpicker" data-autoclose="true">
           <%= f.text_field :work_end_time, value: @timecard.work_end_time.to_s(:h_colon_m),
 	      class: 'form-control', style: "cursor: default; background-color: white;", readonly: true %>
           <span class = "input-group-btn">
@@ -49,7 +49,7 @@
 
       <div class="form-group">
         <%= f.label :rest_start_time, "休憩開始時刻" %>
-        <div class = "input-group clockpicker">
+        <div class = "input-group clockpicker" data-autoclose="true">
           <%= f.text_field :rest_start_time, value: @timecard.rest_start_time.to_s(:h_colon_m),
               class: 'form-control', style: "cursor: default; background-color: white;", readonly: true %>
           <span class = "input-group-btn">
@@ -64,7 +64,7 @@
 
       <div class="form-group">
         <%= f.label :rest_end_time, "休憩終了時刻" %>
-        <div class = "input-group clockpicker">
+        <div class = "input-group clockpicker" data-autoclose="true">
           <%= f.text_field :rest_end_time, value: @timecard.rest_end_time.to_s(:h_colon_m),
               class: 'form-control', style: "cursor: default; background-color: white;", readonly: true %>
           <span class = "input-group-btn">

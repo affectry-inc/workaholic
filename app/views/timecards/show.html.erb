@@ -34,7 +34,7 @@
       </div>
 
         <%= link_to "戻る", timecards_path(year: @timecard.biz_date.year,
-	                                   month: @timecard.biz_date.month), class: "btn btn-block btn-primary" %>
+	                                   month: @timecard.biz_date.month, user: @timecard.user_id), class: "btn btn-block btn-primary" %>
     <% end %>
   </div>
 </div>

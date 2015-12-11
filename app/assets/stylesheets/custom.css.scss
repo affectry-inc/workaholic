@@ -117,6 +117,11 @@ th.centerized, td.centerized {
   text-align: center;
 }
 
+.table > tbody > tr > th.middled,
+.table > tbody > tr > td.middled {
+  vertical-align: middle;
+}
+
 tr.editable:hover {
   background-color: silver
 }
@@ -150,7 +155,7 @@ aside {
 }
 
 .gravatar {
-  float: left;
+  /* float: left; */
   margin-right: 10px;
 }
 
