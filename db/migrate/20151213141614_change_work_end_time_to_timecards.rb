@@ -1,5 +1,5 @@
 class ChangeWorkEndTimeToTimecards < ActiveRecord::Migration
   def change
-    change_column :timecards, :work_end_time, :timestamp_with_tz
+    change_column :timecards, :work_end_time, :timestamp
   end
 end
