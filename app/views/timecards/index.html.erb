@@ -27,78 +27,9 @@
 </div>
 
 <br>
-
-<table class="table">
-  <thead>
-    <tr align="center">
-      <th class="centerized" colspan="2">日付</th>
-      <th class="centerized">勤怠</th>
-      <th class="centerized">業務開始時刻</th>
-      <th class="centerized">業務終了時刻</th>
-      <th class="centerized">休憩開始時刻</th>
-      <th class="centerized">休憩終了時刻</th>
-      <th class="centerized">記入済</th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% biz_days = 0 %> <!-- 営業日数 -->
-    <% work_days = 0 %><!-- 勤務日数 -->
-    <% off_days = 0 %><!-- 休暇日数 -->
-    <% work_mins = 0 %><!-- 勤務時間 -->
-    <% @monthly_timecards.each do |tc| %>
-      <% if tc.biz_date.wday == 0 || tc.biz_date.wday == 6 %>
-        <tr bgcolor="#a9a9a9">
-          <td class="centerized"><%= tc.biz_date.to_s(:y_slash_m_slash_d) %></td>
-	  <% if tc.biz_date.wday == 0 %>
-            <td style="color: red;"><%= tc.biz_date.strftime("%a") %></td>
-	  <% else %>
-            <td style="color: blue;"><%= tc.biz_date.strftime("%a") %></td>
-	  <% end %>
-          <td class="centerized">休日</td>
-          <td class="centerized"></td>
-          <td class="centerized"></td>
-          <td class="centerized"></td>
-          <td class="centerized"></td>
-          <td class="centerized"></td>
-      <% else %>
-        <% if tc.is_new %>
-	  <% data_link = new_timecard_path(biz_date: tc.biz_date, user: @user_id) %>
-	  <% span = '' %>
-        <% else %>
-	  <% data_link = edit_timecard_path(tc) %>
-	  <% span = '<span class="glyphicon glyphicon-ok"></span>' %>
-        <% end %>
-        <% if tc.biz_date < Date.today  %>
-	  <% bgcolor = 'bgcolor="#d3d3d3"' %>
-	<% else %>
-	  <% bgcolor = '' %>
-	<% end %>
-        <tr class="editable" data-link="<%= data_link %>" style="cursor: pointer;" <%= bgcolor.html_safe %>>
-          <td class="centerized"><%= tc.biz_date.to_s(:y_slash_m_slash_d) %></td>
-          <td><%= tc.biz_date.strftime("%a") %></td>
-          <td class="centerized"><%= @attn_ctgrs.find_by(val: tc.attn_ctgr).name %></td>
-          <td class="centerized"><%= tc.work_start_time.to_s(:h_colon_m) %></td>
-          <td class="centerized"><%= tc.work_end_time.to_s(:h_colon_m) %></td>
-          <td class="centerized"><%= tc.rest_start_time.to_s(:h_colon_m) %></td>
-          <td class="centerized"><%= tc.rest_end_time.to_s(:h_colon_m) %></td>
-          <td class="centerized"><%= span.html_safe %></td>
-	<% biz_days += 1 %>
-	<% if !tc.is_new && tc.attn_ctgr == 0 %>
-	  <% work_days  += 1 %>
-	  <% work_mins += (tc.work_end_time - tc.work_start_time).divmod(60)[0].to_i %>
-	  <% work_mins -= (tc.rest_end_time - tc.rest_start_time).divmod(60)[0].to_i %>
-	<% end %>
-	<% off_days += 1 if tc.attn_ctgr == 1 %>
-      <% end %>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
 <br>
 
-<table class="table table-border">
+<table class="table table-condensed">
   <thead>
     <tr align="center">
       <th class="centerized">営業日数</th>
@@ -109,12 +40,85 @@
   </thead>
   <tbody>
     <tr align="center">
-      <th class="centerized"><%= biz_days.to_s + " 日" %></th>
-      <th class="centerized"><%= work_days.to_s + " 日" %></th>
-      <th class="centerized"><%= off_days.to_s + " 日" %></th>
-      <% work_hours = work_mins.divmod(60) %>
-      <th class="centerized"><%= work_hours[0].to_s + " 時間 " + "%02d" % work_hours[1] + " 分" %></th>
+      <th class="centerized"><%= @biz_days.to_s + " 日" %></th>
+      <th class="centerized"><%= @attn_days.to_s + " 日" %></th>
+      <th class="centerized"><%= @absc_days.to_s + " 日" %></th>
+      <% work_hours = @work_mins.divmod(60) %>
+      <% if work_hours[0] > 240 %>
+        <% color_red = 'style="color: red;"' %>
+      <% else %>
+        <% color_red = '' %>
+      <% end %>
+      <th class="centerized" <%= color_red.html_safe %>>
+        <%= work_hours[0].to_s + " 時間 " + "%02d" % work_hours[1] + " 分" %>
+      </th>
     </tr>
+  </tbody>
+</table>
+
+<table class="table table-hover">
+  <thead>
+    <tr align="center">
+      <th class="centerized" colspan="2" rowspan="2">日付</th>
+      <th class="centerized" rowspan="2">勤怠</th>
+      <th class="centerized" colspan="2">業務</th>
+      <th class="centerized" colspan="2">休憩</th>
+      <th class="centerized" rowspan="2">記入済</th>
+    </tr>
+    <tr align="center">
+      <th class="centerized">開始</th>
+      <th class="centerized">終了</th>
+      <th class="centerized">開始</th>
+      <th class="centerized">終了</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% biz_days = 0 %> <!-- 営業日数 -->
+    <% work_days = 0 %><!-- 勤務日数 -->
+    <% off_days = 0 %><!-- 休暇日数 -->
+    <% work_mins = 0 %><!-- 勤務時間 -->
+    <% @monthly_timecards.each do |tc| %>
+      <% if tc.is_new %>
+	<% data_link = new_timecard_path(biz_date: tc.biz_date, user: @user_id) %>
+	<% span = '' %>
+      <% else %>
+	<% data_link = edit_timecard_path(tc) %>
+	<% span = '<span class="glyphicon glyphicon-ok"></span>' %>
+      <% end %>
+      <% if tc.holiday_ctgr == 1 || tc.holiday_ctgr == 3 %>
+	<% bgcolor = 'bgcolor="#a9a9a9"' %>
+	<% word_color = 'style="color: red;"' %>
+      <% elsif tc.holiday_ctgr == 2 %>
+	<% bgcolor = 'bgcolor="#a9a9a9"' %>
+	<% word_color = 'style="color: blue;"'%>
+      <% elsif tc.biz_date < Date.today  %>
+	<% bgcolor = 'bgcolor="#d3d3d3"' %>
+	<% word_color = '' %>
+      <% else %>
+	<% bgcolor = '' %>
+	<% word_color = '' %>
+      <% end %>
+
+        <tr data-link="<%= data_link %>" style="cursor: pointer;" <%= bgcolor.html_safe %>>
+          <td class="centerized"><%= tc.biz_date.to_s(:y_slash_m_slash_d) %></td>
+          <td <%= word_color.html_safe %>><%= tc.biz_date.strftime("%a") %></td>
+          <td class="centerized"><%= tc.attn_ctgr_disp %></td>
+	  <% if tc.is_disp_times %>
+          <td class="centerized"><%= tc.work_start_time.to_s(:h_colon_m) %></td>
+          <td class="centerized"><%= tc.work_end_time.to_s(:h_colon_m) %></td>
+          <td class="centerized"><%= tc.rest_start_time.to_s(:h_colon_m) %></td>
+          <td class="centerized"><%= tc.rest_end_time.to_s(:h_colon_m) %></td>
+          <td class="centerized"><%= span.html_safe %></td>
+	  <% else %>
+          <td class="centerized"></td>
+          <td class="centerized"></td>
+          <td class="centerized"></td>
+          <td class="centerized"></td>
+          <td class="centerized"></td>
+	  <% end %>
+	</tr>
+      <% end %>
   </tbody>
 </table>
 

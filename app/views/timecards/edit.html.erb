@@ -10,7 +10,10 @@
 <div class="row">
   <div class="col-md-6 col-md-offset-3">
     <%= form_for(@timecard) do |f| %>
+      <% @errors = @timecard.errors %>
+      <%= render 'shared/error_messages' %>
       <%= f.hidden_field :biz_date, value: @timecard.biz_date %>
+      <%= f.hidden_field :user_id, value: @timecard.user_id %>
 
       <%= f.label :attn_ctgy, "勤怠区分"  %>
       <%= f.collection_select :attn_ctgr, 
@@ -19,9 +22,9 @@
 
       <div class="form-group">
         <%= f.label :work_start_time, "勤務開始時刻" %>
-        <div class = "input-group clockpicker" data-autoclose="true">
+        <div class = "input-group">
           <%= f.text_field :work_start_time, value: @timecard.work_start_time.to_s(:h_colon_m),
-              class: 'form-control', style: "cursor: default; background-color: white;", readonly: true %>
+              class: 'form-control bootstrap-timepicker timepicker' %>
           <span class = "input-group-btn">
             <button class = "btn btn-default" type = "button"
 	     onclick = "document.getElementById('timecard_work_start_time').value
@@ -34,9 +37,9 @@
 
       <div class="form-group">
         <%= f.label :work_end_time, "勤務終了時刻" %>
-        <div class = "input-group clockpicker" data-autoclose="true">
+        <div class = "input-group">
           <%= f.text_field :work_end_time, value: @timecard.work_end_time.to_s(:h_colon_m),
-	      class: 'form-control', style: "cursor: default; background-color: white;", readonly: true %>
+              class: 'form-control bootstrap-timepicker timepicker' %>
           <span class = "input-group-btn">
             <button class = "btn btn-default" type = "button"
 	     onclick = "document.getElementById('timecard_work_end_time').value
@@ -49,9 +52,9 @@
 
       <div class="form-group">
         <%= f.label :rest_start_time, "休憩開始時刻" %>
-        <div class = "input-group clockpicker" data-autoclose="true">
+        <div class = "input-group">
           <%= f.text_field :rest_start_time, value: @timecard.rest_start_time.to_s(:h_colon_m),
-              class: 'form-control', style: "cursor: default; background-color: white;", readonly: true %>
+              class: 'form-control bootstrap-timepicker timepicker', id: 'rest_start_time' %>
           <span class = "input-group-btn">
             <button class = "btn btn-default" type = "button"
 	     onclick = "document.getElementById('timecard_rest_start_time').value
@@ -64,9 +67,9 @@
 
       <div class="form-group">
         <%= f.label :rest_end_time, "休憩終了時刻" %>
-        <div class = "input-group clockpicker" data-autoclose="true">
+        <div class = "input-group">
           <%= f.text_field :rest_end_time, value: @timecard.rest_end_time.to_s(:h_colon_m),
-              class: 'form-control', style: "cursor: default; background-color: white;", readonly: true %>
+              class: 'form-control bootstrap-timepicker timepicker', id: 'rest_end_time' %>
           <span class = "input-group-btn">
             <button class = "btn btn-default" type = "button"
 	     onclick = "document.getElementById('timecard_rest_end_time').value
@@ -77,18 +80,28 @@
         </div>
       </div>
 
+
       <%= f.submit "更新", class: "btn btn-primary" %>
     <% end %>
   </div>
 </div>
 
 <script type="text/javascript">
-  $('.clockpicker').clockpicker();
-
   $(function(){
     setInterval(function(){
       now = new Date();
       $("#cur-time").text(('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2));
     }, 1000);
   });
+
+  $(function(){
+    $('.timepicker')
+      .timepicker({minuteStep: 5, maxHours: 24, showMeridian: false, disableFocus: true, explicitMode: true})
+      .on('hide.timepicker', function(e){
+	// 休憩は自動で1時間
+        /*if (this.id == 'rest_start_time') 
+           $('#rest_end_time').timepicker('setTime', e.time.hours+1+':'+e.time.minutes);*/
+      })
+  });
+
 </script>

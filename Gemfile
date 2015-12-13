@@ -7,6 +7,7 @@ gem 'bcrypt', '3.1.7'
 gem 'will_paginate', '3.0.7'
 gem 'bootstrap-will_paginate', '0.0.10'
 gem 'bootstrap-sass', '3.2.0.0'
+gem 'bootstrap-timepicker-rails-addon', '~> 0.5.1'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
@@ -34,7 +35,8 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
-gem 'clockpicker-rails', '0.0.2'
+gem 'holiday_japan'
+gem 'jc-validates_timeliness'
 
 group :development, :test do
   # Use sqlite3 as the database for Active Record

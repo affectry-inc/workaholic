@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151208112251) do
+ActiveRecord::Schema.define(version: 20151213141633) do
 
   create_table "approvers", force: :cascade do |t|
     t.integer  "user_id"
@@ -60,10 +60,10 @@ ActiveRecord::Schema.define(version: 20151208112251) do
   create_table "timecards", force: :cascade do |t|
     t.date     "biz_date"
     t.integer  "attn_ctgr"
-    t.time     "work_start_time"
-    t.time     "work_end_time"
-    t.time     "rest_start_time"
-    t.time     "rest_end_time"
+    t.datetime "work_start_time"
+    t.datetime "work_end_time"
+    t.datetime "rest_start_time"
+    t.datetime "rest_end_time"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
     t.integer  "user_id"
