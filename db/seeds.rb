@@ -58,7 +58,7 @@ User.create(name: 'Miki Chiba',
             password_confirmation: 'linkage00', 
             admin: false)
 
-Language.create(lang_id: 0, name: 'jp')
+Language.create(lang_id: 0, name: 'ja')
 Language.create(lang_id: 1, name: 'en')
 
 Category.create(ctgr_id: 0, lang_id: 0, val: 0, name: '出勤')
