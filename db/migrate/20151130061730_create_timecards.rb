@@ -3,7 +3,7 @@ class CreateTimecards < ActiveRecord::Migration
     create_table :timecards do |t|
       t.date :biz_date
       t.integer :attn_ctgr
-      t.time :work_start_time
+      t.column :work_start_time, 'timestamp with time zone'
       t.time :work_end_time
       t.time :rest_start_time
       t.time :rest_end_time
