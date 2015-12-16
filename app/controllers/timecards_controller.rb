@@ -10,21 +10,30 @@ class TimecardsController < ApplicationController
     e_date = @b_date.end_of_month
 
     if params[:user] == nil
-      @user_id = current_user.id
+      user_id = current_user.id
     else
-      @user_id = params[:user].to_i
+      user_id = params[:user].to_i
     end
+    @user = User.find(user_id)
 
-    def_work_start_time = Date.today.to_time
-    def_work_end_time = Date.today.to_time
-    def_rest_start_time = Date.today.to_time
-    def_rest_end_time = Date.today.to_time
+    if @user.use_def_times
+      def_work_start_time = @user.def_work_start_time || Date.today.to_time
+      def_work_end_time = @user.def_work_end_time || Date.today.to_time
+      def_rest_start_time = @user.def_rest_start_time || Date.today.to_time
+      def_rest_end_time = @user.def_rest_end_time || Date.today.to_time
+    else
+      def_work_start_time = Date.today.to_time
+      def_work_end_time = Date.today.to_time
+      def_rest_start_time = Date.today.to_time
+      def_rest_end_time = Date.today.to_time
+    end
     @biz_days = 0
     @attn_days = 0
     @absc_days = 0
     @work_mins = 0
     attn_ctgrs = Category.where("ctgr_id = ? and lang_id = ?", 0, 0)
-    timecards = Timecard.where(biz_date: @b_date..e_date).where(user_id: @user_id)
+    wf_status_ctgr = Category.where("ctgr_id = ? and lang_id = ?", 1, 0)
+    timecards = Timecard.where(biz_date: @b_date..e_date).where(user_id: user_id)
     @monthly_timecards = Array.new
     (@b_date..e_date).each do |date|
       if timecards.exists?(biz_date: date)
@@ -39,10 +48,10 @@ class TimecardsController < ApplicationController
         tc = Timecard.new
         tc.biz_date = date
         tc.attn_ctgr = 0
-        tc.work_start_time = def_work_start_time
-        tc.work_end_time = def_work_end_time
-        tc.rest_start_time = def_rest_start_time
-        tc.rest_end_time = def_rest_end_time
+        tc.work_start_time = sum_date_time(date, def_work_start_time)
+        tc.work_end_time = sum_date_time(date, def_work_end_time)
+        tc.rest_start_time = sum_date_time(date, def_rest_start_time)
+        tc.rest_end_time = sum_date_time(date, def_rest_end_time)
         tc.id = 999
 	tc.is_new = true
       end
@@ -66,6 +75,7 @@ class TimecardsController < ApplicationController
 	@absc_days += 1 if tc.attn_ctgr == 1
       end
       tc.is_disp_times = true if !tc.is_new && tc.attn_ctgr == 0 # Display times if NOT new no matter holiday
+      tc.wf_status_ctgr_disp = wf_status_ctgr.find_by(val: tc.wf_status).name
 
       @monthly_timecards[@monthly_timecards.length] = tc
     end
@@ -76,11 +86,23 @@ class TimecardsController < ApplicationController
 
   def new
     biz_date = Date.parse(params[:biz_date])
+    user = User.find(params[:user])
+    if user.use_def_times
+      def_work_start_time = sum_date_time(biz_date, user.def_work_start_time)
+      def_work_end_time = sum_date_time(biz_date, user.def_work_end_time)
+      def_rest_start_time = sum_date_time(biz_date, user.def_rest_start_time)
+      def_rest_end_time = sum_date_time(biz_date, user.def_rest_end_time)
+    else
+      def_work_start_time = biz_date.to_time
+      def_work_end_time = biz_date.to_time
+      def_rest_start_time = biz_date.to_time
+      def_rest_end_time = biz_date.to_time
+    end
     @timecard = Timecard.new(biz_date: biz_date, attn_ctgr: 0,
-                             work_start_time: biz_date.to_time,
-                             work_end_time: biz_date.to_time,
-			     rest_start_time: biz_date.to_time,
-			     rest_end_time: biz_date.to_time,
+                             work_start_time: def_work_start_time,
+                             work_end_time: def_work_end_time,
+			     rest_start_time: def_rest_start_time,
+			     rest_end_time: def_rest_end_time,
 			     user_id: params[:user].to_i)
 
     if editable?(@timecard)
@@ -98,6 +120,11 @@ class TimecardsController < ApplicationController
 
   def create
     @timecard = Timecard.new(timecard_params)
+    @timecard.modify_times_date
+    if params[:submit]
+      @timecard.wf_status = 5
+    end
+
     if @timecard.save
       flash[:success] = "Timecard updated!"
       redirect_to timecards_path(user: @timecard.user_id,
@@ -109,7 +136,15 @@ class TimecardsController < ApplicationController
 
   def update
     @timecard = Timecard.find(params[:id])
+    if params[:save]
+      @timecard.wf_status = 0
+    elsif params[:submit]
+      @timecard.wf_status = 5
+    end
+
     if @timecard.update_attributes(timecard_params)
+      @timecard.modify_times_date
+      @timecard.save
       flash[:success] = "Timecard updated!"
       redirect_to timecards_path(user: @timecard.user_id,
                                  year: @timecard.biz_date.year, month: @timecard.biz_date.month)
@@ -137,6 +172,14 @@ class TimecardsController < ApplicationController
 
     def approver_of?(user_id)
       Approver.where(user_id: user_id).where(approver_user_id: current_user.id).count > 0
+    end
+
+    def sum_date_time(date, time)
+      if time
+        Time.zone.local(date.year, date.month, date.day, time.hour, time.min, 0)
+      else
+        Time.zone.local(date.year, date.month, date.day, 0, 0, 0)
+      end
     end
 
 end

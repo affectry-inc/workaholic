@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151208112251) do
+ActiveRecord::Schema.define(version: 20151214081224) do
 
   create_table "approvers", force: :cascade do |t|
     t.integer  "user_id"
@@ -64,19 +64,25 @@ ActiveRecord::Schema.define(version: 20151208112251) do
     t.datetime "work_end_time"
     t.datetime "rest_start_time"
     t.datetime "rest_end_time"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
     t.integer  "user_id"
+    t.integer  "wf_status",       default: 0
   end
 
   create_table "users", force: :cascade do |t|
     t.string   "name"
     t.string   "email"
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
     t.string   "password_digest"
     t.string   "remember_digest"
-    t.boolean  "admin",           default: false
+    t.boolean  "admin",               default: false
+    t.boolean  "use_def_times",       default: false
+    t.time     "def_work_start_time"
+    t.time     "def_work_end_time"
+    t.time     "def_rest_start_time"
+    t.time     "def_rest_end_time"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true

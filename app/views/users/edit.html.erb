@@ -19,6 +19,36 @@
       <%= f.label :password_confirmation, "Confirmation" %>
       <%= f.password_field :password_confirmation, class: 'form-control' %>
 
+      <br>
+      <%= f.label :use_def_times, class: "checkbox inline" do %>
+        <%= f.check_box :use_def_times %>
+        <span>時刻の初期設定を使う</span>
+      <% end %>
+
+      <div class="form-group row">
+        <label class="col-md-2 form-control-static">勤務時刻</label>
+        <div class="col-md-5">
+	  <% def_work_start_time = @user.def_work_start_time || Date.today.to_time %>
+          <%= f.time_field :def_work_start_time, class: 'form-control' %>
+	</div>
+        <div class="col-md-5">
+	  <% def_work_end_time = @user.def_work_end_time || Date.today.to_time %>
+          <%= f.time_field :def_work_end_time, class: 'form-control' %>
+	</div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-md-2 form-control-static">休憩時刻</label>
+        <div class="col-md-5">
+	  <% def_rest_start_time = @user.def_rest_start_time || Date.today.to_time %>
+          <%= f.time_field :def_rest_start_time, class: 'form-control' %>
+	</div>
+        <div class="col-md-5">
+	  <% def_rest_end_time = @user.def_rest_end_time || Date.today.to_time %>
+          <%= f.time_field :def_rest_end_time, class: 'form-control' %>
+	</div>
+      </div>
+
       <%= f.submit "更新", class: "btn btn-primary" %>
     <% end %>
 

@@ -1,8 +1,8 @@
 <% provide(:title, '勤怠入力') %>
 
-<% if @user_id != current_user.id %>
+<% if @user.id != current_user.id %>
   <div style="float: left; margin-top: 20px; margin-left: 50px">
-    <h3><%= User.find(@user_id).name %></h3>
+    <h3><%= @user.name %></h3>
   </div>
 <% end %>
 
@@ -10,26 +10,25 @@
 
 <div class="center">
   <span class = "btn-group">
-    <%= link_to "<<", timecards_path(user: @user_id, year: @b_date.year-1, month: @b_date.month),
+    <%= link_to "<<", timecards_path(user: @user.id, year: @b_date.year-1, month: @b_date.month),
                       class: "btn btn-default" %>
     <% (1..12).each do |i| %>
       <% if i == @b_date.month %>
         <%= link_to @b_date.year.to_s + "/" + i.to_s, 
-            timecards_path(user: @user_id, year: @b_date.year, month: i), class: "btn btn-default active" %>
+            timecards_path(user: @user.id, year: @b_date.year, month: i), class: "btn btn-default active" %>
       <% else %>
         <%= link_to @b_date.year.to_s + "/" + i.to_s, 
-            timecards_path(user: @user_id, year: @b_date.year, month: i), class: "btn btn-default" %>
+            timecards_path(user: @user.id, year: @b_date.year, month: i), class: "btn btn-default" %>
       <% end %>
     <% end %>
-    <%= link_to ">>", timecards_path(user: @user_id, year: @b_date.year+1, month: @b_date.month),
+    <%= link_to ">>", timecards_path(user: @user.id, year: @b_date.year+1, month: @b_date.month),
                       class: "btn btn-default" %>
   </span>
 </div>
 
 <br>
-<br>
 
-<table class="table table-condensed">
+<table class="table table-bordered table-condensed">
   <thead>
     <tr align="center">
       <th class="centerized">営業日数</th>
@@ -63,7 +62,7 @@
       <th class="centerized" rowspan="2">勤怠</th>
       <th class="centerized" colspan="2">業務</th>
       <th class="centerized" colspan="2">休憩</th>
-      <th class="centerized" rowspan="2">記入済</th>
+      <th class="centerized" rowspan="2">ステータス</th>
     </tr>
     <tr align="center">
       <th class="centerized">開始</th>
@@ -80,11 +79,9 @@
     <% work_mins = 0 %><!-- 勤務時間 -->
     <% @monthly_timecards.each do |tc| %>
       <% if tc.is_new %>
-	<% data_link = new_timecard_path(biz_date: tc.biz_date, user: @user_id) %>
-	<% span = '' %>
+	<% data_link = new_timecard_path(biz_date: tc.biz_date, user: @user.id) %>
       <% else %>
 	<% data_link = edit_timecard_path(tc) %>
-	<% span = '<span class="glyphicon glyphicon-ok"></span>' %>
       <% end %>
       <% if tc.holiday_ctgr == 1 || tc.holiday_ctgr == 3 %>
 	<% bgcolor = 'bgcolor="#a9a9a9"' %>
@@ -109,7 +106,7 @@
           <td class="centerized"><%= tc.work_end_time.to_s(:h_colon_m) %></td>
           <td class="centerized"><%= tc.rest_start_time.to_s(:h_colon_m) %></td>
           <td class="centerized"><%= tc.rest_end_time.to_s(:h_colon_m) %></td>
-          <td class="centerized"><%= span.html_safe %></td>
+          <td class="centerized"><%= tc.wf_status_ctgr_disp %></td>
 	  <% else %>
           <td class="centerized"></td>
           <td class="centerized"></td>

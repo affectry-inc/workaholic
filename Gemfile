@@ -7,7 +7,6 @@ gem 'bcrypt', '3.1.7'
 gem 'will_paginate', '3.0.7'
 gem 'bootstrap-will_paginate', '0.0.10'
 gem 'bootstrap-sass', '3.2.0.0'
-gem 'bootstrap-timepicker-rails-addon', '~> 0.5.1'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
