@@ -83,30 +83,38 @@
       <% else %>
 	<% data_link = edit_timecard_path(tc) %>
       <% end %>
+
+      <% bgcolor = '' %>
+      <% wday_color_class = '' %>
       <% if tc.holiday_ctgr == 1 || tc.holiday_ctgr == 3 %>
 	<% bgcolor = 'bgcolor="#a9a9a9"' %>
-	<% word_color = 'style="color: red;"' %>
+	<% wday_color_class = 'text-danger' %>
       <% elsif tc.holiday_ctgr == 2 %>
 	<% bgcolor = 'bgcolor="#a9a9a9"' %>
-	<% word_color = 'style="color: blue;"'%>
-      <% elsif tc.biz_date < Date.today  %>
-	<% bgcolor = 'bgcolor="#d3d3d3"' %>
-	<% word_color = '' %>
-      <% else %>
-	<% bgcolor = '' %>
-	<% word_color = '' %>
+	<% wday_color_class = 'text-primary'%>
+      <% elsif tc.biz_date == Date.today %>
+	<% bgcolor = 'bgcolor="#FFFFDD"' %>
+      <% end %>
+
+      <% wf_status_color = '' %>
+      <% if (tc.wf_status == 0 || tc.wf_status == 2) && tc.biz_date < Date.today %>
+        <% wf_status_color = 'style="color:red;"' %>
+      <% elsif tc.wf_status == 5 %>
+        <% wf_status_color = 'style="color:blue;"' %>
+      <% elsif tc.wf_status == 9 %>
+        <% wf_status_color = 'style="color:silver"' %>
       <% end %>
 
         <tr data-link="<%= data_link %>" style="cursor: pointer;" <%= bgcolor.html_safe %>>
           <td class="centerized"><%= tc.biz_date.to_s(:y_slash_m_slash_d) %></td>
-          <td <%= word_color.html_safe %>><%= tc.biz_date.strftime("%a") %></td>
+          <td class="<%= wday_color_class.html_safe %>"><%= tc.biz_date.strftime("%a") %></td>
           <td class="centerized"><%= tc.attn_ctgr_disp %></td>
 	  <% if tc.is_disp_times %>
           <td class="centerized"><%= tc.work_start_time.to_s(:h_colon_m) %></td>
           <td class="centerized"><%= tc.work_end_time.to_s(:h_colon_m) %></td>
           <td class="centerized"><%= tc.rest_start_time.to_s(:h_colon_m) %></td>
           <td class="centerized"><%= tc.rest_end_time.to_s(:h_colon_m) %></td>
-          <td class="centerized"><%= tc.wf_status_ctgr_disp %></td>
+          <td class="centerized" <%= wf_status_color.html_safe %>><%= tc.wf_status_ctgr_disp %></td>
 	  <% else %>
           <td class="centerized"></td>
           <td class="centerized"></td>

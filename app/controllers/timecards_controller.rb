@@ -140,6 +140,8 @@ class TimecardsController < ApplicationController
       @timecard.wf_status = 0
     elsif params[:submit]
       @timecard.wf_status = 5
+    elsif params[:approve] && view_context.approver_of?(@timecard.user_id)
+      @timecard.wf_status = 9
     end
 
     if @timecard.update_attributes(timecard_params)
@@ -153,6 +155,20 @@ class TimecardsController < ApplicationController
     end
   end
 
+  def workflow # 2:Sent back 9:Approved
+    timecard_id = params[:timecard][:id].to_i
+    user_id = params[:timecard][:user].to_i
+    wf_status = params[:timecard][:wf].to_i
+
+    if wf_status == 2 || wf_status == 9
+      @timecard = Timecard.find(timecard_id)
+      @timecard.update_attributes(wf_status: wf_status) if view_context.approver_of?(user_id)
+    end
+
+    redirect_to timecards_path(user: @timecard.user_id,
+                               year: @timecard.biz_date.year, month: @timecard.biz_date.month)
+  end
+
   private
 
     def timecard_params
@@ -162,16 +178,14 @@ class TimecardsController < ApplicationController
 
     def editable?(timecard)
       if current_user.admin
-        true
-      elsif timecard.user_id == current_user.id && timecard.biz_date >= Date.today
-        true
-      else
-        approver_of?(timecard.user_id)
+        return true
       end
-    end
 
-    def approver_of?(user_id)
-      Approver.where(user_id: user_id).where(approver_user_id: current_user.id).count > 0
+      if timecard.wf_status == 0 || timecard.wf_status == 2
+        return timecard.user_id == current_user.id || view_context.approver_of?(timecard.user_id)
+      end
+
+      false
     end
 
     def sum_date_time(date, time)

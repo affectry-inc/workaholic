@@ -6,12 +6,11 @@ Rails.application.routes.draw do
   get    'login'   => 'sessions#new'
   post   'login'   => 'sessions#create'
   delete 'logout'  => 'sessions#destroy'
-  get 'timecards' => 'timecards#index'
-  post 'timecards' => 'timecards#create'
-  get 'timecards/new' => 'timecards#new', as: :new_timecard
-  get 'timecards/:id/edit' => 'timecards#edit', as: :edit_timecard
-  get 'timecards/:id' => 'timecards#show', as: :timecard
-  patch 'timecards/:id' => 'timecards#update'
+  resources :timecards do
+    member do
+      post 'workflow'
+    end
+  end
   resources :users
 
 

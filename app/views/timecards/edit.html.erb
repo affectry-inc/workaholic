@@ -77,8 +77,15 @@
       </div>
 
       <div>
-        <%= f.submit "保存", name: "save", class: "col-md-6 btn btn-info" %>
-        <%= f.submit "提出", name: "submit", class: "col-md-6 btn btn-primary" %>
+        <% if @timecard.user_id == current_user.id %>
+          <%= f.submit "更新", name: "save", class: "col-md-6 btn btn-info" %>
+          <%= f.submit "提出", name: "submit", class: "col-md-6 btn btn-primary" %>
+        <% elsif approver_of?(@timecard.user_id) %>
+          <%= f.submit "更新", name: "save", class: "btn btn-info" %>
+	<% end %>
+        <%= link_to "戻る", timecards_path(year: @timecard.biz_date.year,
+	                                   month: @timecard.biz_date.month, user: @timecard.user_id),
+					   class: "col-md-12 btn btn-info" %>
       </div>
     <% end %>
   </div>
