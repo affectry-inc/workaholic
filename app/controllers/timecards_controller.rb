@@ -61,13 +61,13 @@ class TimecardsController < ApplicationController
       end
       if HolidayJapan.check(tc.biz_date)
 	tc.holiday_ctgr = 1
-	tc.attn_ctgr = 9 if tc.attn_ctgr != 0
+	tc.attn_ctgr = 9 unless !tc.is_new and tc.attn_ctgr == 0
       elsif tc.biz_date.wday == 0
         tc.holiday_ctgr = 3
-	tc.attn_ctgr = 9 if tc.attn_ctgr != 0
+	tc.attn_ctgr = 9 unless !tc.is_new and tc.attn_ctgr == 0
       elsif tc.biz_date.wday == 6
         tc.holiday_ctgr = 2
-	tc.attn_ctgr = 9 if tc.attn_ctgr != 0
+	tc.attn_ctgr = 9 unless !tc.is_new and tc.attn_ctgr == 0
       else
 	tc.holiday_ctgr = 0
 	@biz_days += 1
