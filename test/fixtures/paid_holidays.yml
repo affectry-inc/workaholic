@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_id: 1
+  hours: 1
+  beginning_date: 2015-12-21
+  expiration_date: 2015-12-21
+
+two:
+  user_id: 1
+  hours: 1
+  beginning_date: 2015-12-21
+  expiration_date: 2015-12-21

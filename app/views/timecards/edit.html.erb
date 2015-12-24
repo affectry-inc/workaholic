@@ -14,10 +14,12 @@
       <%= render 'shared/error_messages' %>
       <%= f.hidden_field :biz_date, value: @timecard.biz_date %>
       <%= f.hidden_field :user_id, value: @timecard.user_id %>
+      <%= f.hidden_field :remaining_paid_days, value: @timecard.remaining_paid_days %>
+      <%= f.hidden_field :remaining_paid_hours, value: @timecard.remaining_paid_hours %>
 
       <%= f.label :attn_ctgy, "勤怠区分"  %>
       <%= f.collection_select :attn_ctgr, 
-                     Category.where("ctgr_id = ? and lang_id = ?", 0, 0),
+                     Category.where("ctgr_id = ? and lang_id = ? and val <> 9", 0, 0),
                      :val, :name, {}, {class: "form-control selectpicker"} %>
 
       <div class="form-group">
@@ -76,12 +78,23 @@
         </div>
       </div>
 
+      <div class="form-group">
+        <div class="form-group">
+          <%= f.label :paid_holiday_hours, "有給休暇（時間）" %>
+	  <span>
+	    &nbsp;&nbsp;&nbsp;（残有給休暇：<%= @timecard.remaining_paid_days %>日+
+	                                    <%= @timecard.remaining_paid_hours %>時間）
+	  </span>
+          <%= f.number_field :paid_holiday_hours, class: 'form-control' %>
+        </div>
+      </div>
+
       <div>
         <% if @timecard.user_id == current_user.id %>
-          <%= f.submit "更新", name: "save", class: "col-md-6 btn btn-info" %>
+          <%= f.submit "保存", name: "save", class: "col-md-6 btn btn-info" %>
           <%= f.submit "提出", name: "submit", class: "col-md-6 btn btn-primary" %>
         <% elsif approver_of?(@timecard.user_id) %>
-          <%= f.submit "更新", name: "save", class: "btn btn-info" %>
+          <%= f.submit "保存", name: "save", class: "btn btn-info" %>
 	<% end %>
         <%= link_to "戻る", timecards_path(year: @timecard.biz_date.year,
 	                                   month: @timecard.biz_date.month, user: @timecard.user_id),
@@ -97,5 +110,11 @@
       now = new Date();
       $("#cur-time").text(('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2));
     }, 1000);
+  });
+  $("select#timecard_attn_ctgr").change(function(){
+    <!--  alert($(":selected").attr("value")); -->
+    if ($(":selected").attr("value") != 0) {
+      $("#timecard_paid_holiday_hours").val(0);
+    }
   });
 </script>

@@ -1,0 +1,144 @@
+<% provide(:title, '有給休暇照会') %>
+<h1>有給休暇</h1>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+<table class="table table-bordered table-condensed table-hover">
+  <thead>
+    <tr align="center">
+      <th class="centerized" colspan="2">期間</th>
+      <th class="centerized">付与分</th>
+      <th class="centerized">使用済</th>
+      <th class="centerized">残り</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr data-target-id="hist_1" align="center" style="cursor: pointer;" class="active">
+      <th class="centerized">2014/10/01</th>
+      <th class="centerized">2016/09/30</th>
+      <th class="centerized">5日 / 40時間</th>
+      <th class="centerized">4日 / 40時間</th>
+      <th class="centerized">1日 / 0時間</th>
+    </tr>
+    <tr data-target-id="hist_2" align="center" style="cursor: pointer;">
+      <th class="centerized">2015/10/01</th>
+      <th class="centerized">2017/09/30</th>
+      <th class="centerized">7日 / 40時間</th>
+      <th class="centerized">0日 / 29時間</th>
+      <th class="centerized">7日 / 11時間</th>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr class="info" align="center">
+      <th class="centerized" colspan="2">合計</th>
+      <th class="centerized">12日 / 80時間</th>
+      <th class="centerized">4日 / 69時間</th>
+      <th class="centerized">8日 / 11時間</th>
+    </tr>
+  </tbody>
+</table>
+
+<br>
+<h3 class="center">使用履歴</h3>
+<table id="hist_1" class="table hist">
+  <thead>
+    <tr align="center">
+      <th class="centerized" colspan="2">2014/10/01~2016/09/30</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="centerized">2014/10/15</td>
+      <td class="centerized">1日</td>
+    </tr>
+    <tr>
+      <td class="centerized">2014/11/05</td>
+      <td class="centerized">4時間</td>
+    </tr>
+    <tr>
+      <td class="centerized">2015/01/15</td>
+      <td class="centerized">1日</td>
+    </tr>
+    <tr>
+      <td class="centerized">2015/02/02</td>
+      <td class="centerized">7時間</td>
+    </tr>
+    <tr>
+      <td class="centerized">2015/02/04</td>
+      <td class="centerized">7時間</td>
+    </tr>
+    <tr>
+      <td class="centerized">2015/03/22</td>
+      <td class="centerized">5時間</td>
+    </tr>
+    <tr>
+      <td class="centerized">2015/05/20</td>
+      <td class="centerized">1日</td>
+    </tr>
+    <tr>
+      <td class="centerized">2015/05/21</td>
+      <td class="centerized">7時間</td>
+    </tr>
+    <tr>
+      <td class="centerized">2015/06/03</td>
+      <td class="centerized">7時間</td>
+    </tr>
+    <tr>
+      <td class="centerized">2015/06/20</td>
+      <td class="centerized">3時間</td>
+    </tr>
+    <tr>
+      <td class="centerized">2015/11/01</td>
+      <td class="centerized">1日</td>
+    </tr>
+  </tbody>
+</table>
+
+<table id="hist_2" class="table hist" style="display:none;">
+  <thead>
+    <tr align="center">
+      <th class="centerized" colspan="2">2015/10/01~2017/09/30</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="centerized">2015/11/08</td>
+      <td class="centerized">2時間</td>
+    </tr>
+    <tr>
+      <td class="centerized">2015/12/12</td>
+      <td class="centerized">4時間</td>
+    </tr>
+    <tr>
+      <td class="centerized">2016/02/15</td>
+      <td class="centerized">7時間</td>
+    </tr>
+    <tr>
+      <td class="centerized">2016/03/22</td>
+      <td class="centerized">5時間</td>
+    </tr>
+    <tr>
+      <td class="centerized">2016/05/20</td>
+      <td class="centerized">4時間</td>
+    </tr>
+    <tr>
+      <td class="centerized">2016/05/21</td>
+      <td class="centerized">5時間</td>
+    </tr>
+    <tr>
+      <td class="centerized">2016/11/01</td>
+      <td class="centerized">2時間</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+<script>
+  $("tr[data-target-id]").click(function() {
+    $("tr[data-target-id]").removeClass('active')
+    $(this).addClass('active')
+    $('.hist').css('display', 'none')
+    $('#'+$(this).data('target-id')).css('display', 'table')
+  })
+</script>

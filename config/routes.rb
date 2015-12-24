@@ -11,6 +11,9 @@ Rails.application.routes.draw do
       post 'workflow'
     end
   end
+  get 'paid_holidays' => 'paid_holidays#index'
+  get 'reports' => 'reports#index'
+  get 'reports/:id/edit' => 'reports#edit', as: :edit_report
   resources :users
 
 

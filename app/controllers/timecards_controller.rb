@@ -30,6 +30,8 @@ class TimecardsController < ApplicationController
     @biz_days = 0
     @attn_days = 0
     @absc_days = 0
+    @paid_days = 0
+    @paid_hours = 0
     @work_mins = 0
     attn_ctgrs = Category.where("ctgr_id = ? and lang_id = ?", 0, 0)
     wf_status_ctgr = Category.where("ctgr_id = ? and lang_id = ?", 1, 0)
@@ -40,10 +42,12 @@ class TimecardsController < ApplicationController
         tc = timecards.find_by(biz_date: date)
 	tc.is_new = false
 	if tc.attn_ctgr == 0
-	  @attn_days += 1
-	  @work_mins += (tc.work_end_time - tc.work_start_time).divmod(60)[0].to_i
-	  @work_mins -= (tc.rest_end_time - tc.rest_start_time).divmod(60)[0].to_i
+	  @attn_days += 1 if tc.wf_status >= 5
+	  @paid_hours += tc.paid_holiday_hours if tc.wf_status >= 5
+	  @work_mins += (tc.work_end_time - tc.work_start_time).divmod(60)[0].to_i if tc.wf_status >= 5
+	  @work_mins -= (tc.rest_end_time - tc.rest_start_time).divmod(60)[0].to_i if tc.wf_status >= 5
 	end
+	@paid_days += 1 if tc.attn_ctgr == 2 if tc.wf_status >= 5
       else
         tc = Timecard.new
         tc.biz_date = date
@@ -57,24 +61,25 @@ class TimecardsController < ApplicationController
       end
       if HolidayJapan.check(tc.biz_date)
 	tc.holiday_ctgr = 1
-	tc.attn_ctgr_disp = HolidayJapan.name(tc.biz_date)
-	tc.is_disp_times = false
+	tc.attn_ctgr = 9 if tc.attn_ctgr != 0
       elsif tc.biz_date.wday == 0
         tc.holiday_ctgr = 3
-	tc.attn_ctgr_disp = "休日"
-	tc.is_disp_times = false
+	tc.attn_ctgr = 9 if tc.attn_ctgr != 0
       elsif tc.biz_date.wday == 6
         tc.holiday_ctgr = 2
-	tc.attn_ctgr_disp = "休日"
-	tc.is_disp_times = false
+	tc.attn_ctgr = 9 if tc.attn_ctgr != 0
       else
 	tc.holiday_ctgr = 0
-	tc.attn_ctgr_disp = attn_ctgrs.find_by(val: tc.attn_ctgr).name
-	tc.is_disp_times = true
 	@biz_days += 1
-	@absc_days += 1 if tc.attn_ctgr == 1
+	@absc_days += 1 if (tc.attn_ctgr == 1) && (tc.wf_status >= 5)
       end
-      tc.is_disp_times = true if !tc.is_new && tc.attn_ctgr == 0 # Display times if NOT new no matter holiday
+
+      if tc.holiday_ctgr == 1 && tc.attn_ctgr != 0
+	tc.attn_ctgr_disp = HolidayJapan.name(tc.biz_date)
+      else
+	tc.attn_ctgr_disp = attn_ctgrs.find_by(val: tc.attn_ctgr).name
+      end
+
       tc.wf_status_ctgr_disp = wf_status_ctgr.find_by(val: tc.wf_status).name
 
       @monthly_timecards[@monthly_timecards.length] = tc
@@ -106,6 +111,9 @@ class TimecardsController < ApplicationController
 			     user_id: params[:user].to_i)
 
     if editable?(@timecard)
+      remaining_paid_holidays = remaining_paid_holidays(@timecard.biz_date, @timecard.user_id)
+      @timecard.remaining_paid_days = remaining_paid_holidays[0].to_i
+      @timecard.remaining_paid_hours = remaining_paid_holidays[1].to_i
       render 'edit'
     else
       render 'show'
@@ -114,6 +122,15 @@ class TimecardsController < ApplicationController
 
   def edit
     @timecard = Timecard.find(params[:id])
+
+    remaining_paid_holidays = remaining_paid_holidays(@timecard.biz_date, @timecard.user_id)
+    @timecard.remaining_paid_days = remaining_paid_holidays[0].to_i
+    @timecard.remaining_paid_hours = remaining_paid_holidays[1].to_i
+    if @timecard.attn_ctgr == 2
+      @timecard.remaining_paid_days += 1
+    elsif @timecard.paid_holiday_hours > 0
+      @timecard.remaining_paid_hours += @timecard.paid_holiday_hours
+    end
 
     render 'show' if !editable?(@timecard)
   end
@@ -125,11 +142,24 @@ class TimecardsController < ApplicationController
       @timecard.wf_status = 5
     end
 
+#    if @timecard.attn_ctgr != 0
+#      @timecard.paid_holiday_hours = 0
+#    end
+
     if @timecard.save
+      if @timecard.attn_ctgr == 2
+        use_paid_holiday(@timecard.user_id, @timecard.biz_date, 1, 0)
+      elsif @timecard.attn_ctgr == 0 && @timecard.paid_holiday_hours > 0
+        use_paid_holiday(@timecard.user_id, @timecard.biz_date, 0, @timecard.paid_holiday_hours)
+      end
+
       flash[:success] = "Timecard updated!"
       redirect_to timecards_path(user: @timecard.user_id,
                                  year: @timecard.biz_date.year, month: @timecard.biz_date.month)
     else
+      remaining_paid_holidays = remaining_paid_holidays(@timecard.biz_date, @timecard.user_id)
+      @timecard.remaining_paid_days = remaining_paid_holidays[0].to_i
+      @timecard.remaining_paid_hours = remaining_paid_holidays[1].to_i
       render 'edit'
     end
   end
@@ -146,11 +176,25 @@ class TimecardsController < ApplicationController
 
     if @timecard.update_attributes(timecard_params)
       @timecard.modify_times_date
+
+      if @timecard.attn_ctgr == 2
+        use_paid_holiday(@timecard.user_id, @timecard.biz_date, 1, 0)
+      elsif @timecard.attn_ctgr == 0 && @timecard.paid_holiday_hours > 0
+        use_paid_holiday(@timecard.user_id, @timecard.biz_date, 0, @timecard.paid_holiday_hours)
+      end
+
+#      if @timecard.attn_ctgr != 0
+#        @timecard.paid_holiday_hours = 0
+#      end
+
       @timecard.save
       flash[:success] = "Timecard updated!"
       redirect_to timecards_path(user: @timecard.user_id,
                                  year: @timecard.biz_date.year, month: @timecard.biz_date.month)
     else
+      remaining_paid_holidays = remaining_paid_holidays(@timecard.biz_date, @timecard.user_id)
+      @timecard.remaining_paid_days = remaining_paid_holidays[0].to_i
+      @timecard.remaining_paid_hours = remaining_paid_holidays[1].to_i
       render 'edit'
     end
   end
@@ -162,7 +206,7 @@ class TimecardsController < ApplicationController
 
     if wf_status == 2 || wf_status == 9
       @timecard = Timecard.find(timecard_id)
-      @timecard.update_attributes(wf_status: wf_status) if view_context.approver_of?(user_id)
+      @timecard.update_attribute(:wf_status, wf_status) if view_context.approver_of?(user_id)
     end
 
     redirect_to timecards_path(user: @timecard.user_id,
@@ -173,7 +217,8 @@ class TimecardsController < ApplicationController
 
     def timecard_params
       params.require(:timecard).permit(:biz_date, :attn_ctgr, :work_start_time, :work_end_time,
-				       :rest_start_time, :rest_end_time, :user_id)
+				       :rest_start_time, :rest_end_time, :user_id, :paid_holiday_hours,
+				       :remaining_paid_days, :remaining_paid_hours)
     end
 
     def editable?(timecard)
@@ -196,4 +241,64 @@ class TimecardsController < ApplicationController
       end
     end
 
+    def remaining_paid_holidays(date, user_id)
+      paid_holidays = PaidHoliday.where('beginning_date <= ? and expiration_date >= ? and user_id = ?',
+                                  date, date, user_id)
+      remainings = Array[0, 0]
+      paid_holidays.each do |ph|
+        remainings[0] += ph.days
+	remainings[1] += ph.hours
+
+	usages = paid_holiday_usage(ph.id, date)
+	remainings[0] -= usages[0]
+	remainings[1] -= usages[1]
+      end
+      return remainings
+    end
+
+    def paid_holiday_usage(paid_holiday_id, date)
+      paid_holiday_usages = PaidHolidayUsage.where('paid_holiday_id = ?', paid_holiday_id)
+
+      usages = Array[0, 0]
+      paid_holiday_usages.each do |phu|
+	usages[0] += phu.days
+	usages[1] += phu.hours
+      end
+      return usages
+    end
+
+    def use_paid_holiday(user_id, date, days, hours)
+      PaidHolidayUsage.delete_all(["user_id = ? and usage_date = ?", user_id, date])
+      paid_holidays = PaidHoliday.where('beginning_date <= ? and expiration_date >= ? and user_id = ?',
+                                  date, date, user_id).order('expiration_date')
+
+      required_days = days
+      required_hours = hours
+      paid_holidays.each do |ph|
+        usages = paid_holiday_usage(ph.id, date)
+	remaining_days = ph.days - usages[0]
+	remaining_hours = ph.hours - usages[1]
+	if required_days > 0 && remaining_days > 0
+	  if remaining_days >= required_days
+	    PaidHolidayUsage.create(paid_holiday_id: ph.id, user_id: user_id, usage_date: date,
+	                            days: required_days, hours: 0)
+	    required_days -= required_days
+	  else
+	    PaidHolidayUsage.create(paid_holiday_id: ph.id, user_id: user_id, usage_date: date,
+	                            days: remaining_days, hours: 0)
+	    required_days -= remaining_days
+	  end
+	elsif required_hours > 0 && remaining_hours > 0
+	  if remaining_hours >= required_hours
+	    PaidHolidayUsage.create(paid_holiday_id: ph.id, user_id: user_id, usage_date: date,
+	                            days: 0, hours: required_hours)
+	    required_hours -= required_hours
+	  else
+	    PaidHolidayUsage.create(paid_holiday_id: ph.id, user_id: user_id, usage_date: date,
+	                            days: 0, hours: remaining_hours)
+	    required_hours -= remaining_hours
+	  end
+	end
+      end
+    end
 end

@@ -4,18 +4,27 @@
     <nav>
       <ul class="nav navbar-nav navbar-right">
         <% if logged_in? %>
-          <li><%= link_to "My Timecards", root_path %></li>
-          <li><%= link_to "Members", users_path %></li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	      勤怠<b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+              <li><%= link_to "勤怠一覧", root_path %></li>
+              <li><%= link_to "有給休暇照会*", paid_holidays_path %></li>
+            </ul>
+          </li>
+          <li><%= link_to "提出物*", reports_path %></li>
+          <li><%= link_to "社員一覧", users_path %></li>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
 	      <%= current_user.name %><b class="caret"></b>
             </a>
             <ul class="dropdown-menu">
-              <li><%= link_to "Profile", current_user %></li>
-              <li><%= link_to "Settings", edit_user_path(current_user) %></li>
+              <li><%= link_to "プロフィール", current_user %></li>
+              <li><%= link_to "設定", edit_user_path(current_user) %></li>
               <li class="divider"></li>
               <li>
-                <%= link_to "Log out", logout_path, method: "delete" %>
+                <%= link_to "ログアウト", logout_path, method: "delete" %>
               </li>
             </ul>
           </li>

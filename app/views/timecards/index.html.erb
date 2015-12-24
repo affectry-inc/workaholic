@@ -1,4 +1,4 @@
-<% provide(:title, '勤怠入力') %>
+<% provide(:title, '勤怠一覧') %>
 
 <% if @user.id != current_user.id %>
   <div style="float: left; margin-top: 20px; margin-left: 50px">
@@ -33,14 +33,16 @@
     <tr align="center">
       <th class="centerized">営業日数</th>
       <th class="centerized">出勤日数</th>
+      <th class="centerized">有給休暇</th>
       <th class="centerized">休暇日数</th>
-      <th class="centerized">勤務時間</th>
+      <th class="centerized">実労働時間</th>
     </tr>
   </thead>
   <tbody>
     <tr align="center">
       <th class="centerized"><%= @biz_days.to_s + " 日" %></th>
       <th class="centerized"><%= @attn_days.to_s + " 日" %></th>
+      <th class="centerized"><%= @paid_days.to_s + " 日 / " + @paid_hours.to_s + " 時間"%></th>
       <th class="centerized"><%= @absc_days.to_s + " 日" %></th>
       <% work_hours = @work_mins.divmod(60) %>
       <% if work_hours[0] > 240 %>
@@ -62,6 +64,7 @@
       <th class="centerized" rowspan="2">勤怠</th>
       <th class="centerized" colspan="2">業務</th>
       <th class="centerized" colspan="2">休憩</th>
+      <th class="centerized" rowspan="2">有給休暇<br>（時間）</th>
       <th class="centerized" rowspan="2">ステータス</th>
     </tr>
     <tr align="center">
@@ -86,14 +89,20 @@
 
       <% bgcolor = '' %>
       <% wday_color_class = '' %>
+      <% attn_ctgr_color = '' %>
       <% if tc.holiday_ctgr == 1 || tc.holiday_ctgr == 3 %>
 	<% bgcolor = 'bgcolor="#a9a9a9"' %>
 	<% wday_color_class = 'text-danger' %>
       <% elsif tc.holiday_ctgr == 2 %>
 	<% bgcolor = 'bgcolor="#a9a9a9"' %>
 	<% wday_color_class = 'text-primary'%>
-      <% elsif tc.biz_date == Date.today %>
-	<% bgcolor = 'bgcolor="#FFFFDD"' %>
+      <% elsif tc.holiday_ctgr == 0 %>
+        <% if tc.biz_date == Date.today %>
+          <% bgcolor = 'bgcolor="#FFFFDD"' %>
+	<% end %>
+        <% if tc.attn_ctgr == 1 || tc.attn_ctgr == 2 %>
+          <% attn_ctgr_color = 'style="color:red;"' %>
+        <% end %>
       <% end %>
 
       <% wf_status_color = '' %>
@@ -108,19 +117,24 @@
         <tr data-link="<%= data_link %>" style="cursor: pointer;" <%= bgcolor.html_safe %>>
           <td class="centerized"><%= tc.biz_date.to_s(:y_slash_m_slash_d) %></td>
           <td class="<%= wday_color_class.html_safe %>"><%= tc.biz_date.strftime("%a") %></td>
-          <td class="centerized"><%= tc.attn_ctgr_disp %></td>
-	  <% if tc.is_disp_times %>
-          <td class="centerized"><%= tc.work_start_time.to_s(:h_colon_m) %></td>
-          <td class="centerized"><%= tc.work_end_time.to_s(:h_colon_m) %></td>
-          <td class="centerized"><%= tc.rest_start_time.to_s(:h_colon_m) %></td>
-          <td class="centerized"><%= tc.rest_end_time.to_s(:h_colon_m) %></td>
-          <td class="centerized" <%= wf_status_color.html_safe %>><%= tc.wf_status_ctgr_disp %></td>
+          <td class="centerized" <%= attn_ctgr_color.html_safe %> ><%= tc.attn_ctgr_disp %></td>
+	  <% if tc.attn_ctgr == 0 %>
+            <td class="centerized"><%= tc.work_start_time.to_s(:h_colon_m) %></td>
+            <td class="centerized"><%= tc.work_end_time.to_s(:h_colon_m) %></td>
+            <td class="centerized"><%= tc.rest_start_time.to_s(:h_colon_m) %></td>
+            <td class="centerized"><%= tc.rest_end_time.to_s(:h_colon_m) %></td>
+            <td class="centerized"><%= tc.paid_holiday_hours %></td>
 	  <% else %>
-          <td class="centerized"></td>
-          <td class="centerized"></td>
-          <td class="centerized"></td>
-          <td class="centerized"></td>
-          <td class="centerized"></td>
+            <td class="centerized"></td>
+            <td class="centerized"></td>
+            <td class="centerized"></td>
+            <td class="centerized"></td>
+            <td class="centerized"></td>
+	  <% end %>
+	  <% if tc.attn_ctgr == 9 %>
+            <td class="centerized"></td>
+	  <% else %>
+            <td class="centerized" <%= wf_status_color.html_safe %>><%= tc.wf_status_ctgr_disp %></td>
 	  <% end %>
 	</tr>
       <% end %>

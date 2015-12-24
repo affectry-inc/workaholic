@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151214081224) do
+ActiveRecord::Schema.define(version: 20151221060502) do
 
   create_table "approvers", force: :cascade do |t|
     t.integer  "user_id"
@@ -57,6 +57,26 @@ ActiveRecord::Schema.define(version: 20151214081224) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "paid_holiday_usages", force: :cascade do |t|
+    t.integer  "paid_holiday_id"
+    t.integer  "user_id"
+    t.date     "usage_date"
+    t.integer  "days"
+    t.integer  "hours"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  create_table "paid_holidays", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "days"
+    t.integer  "hours"
+    t.date     "beginning_date"
+    t.date     "expiration_date"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
   create_table "timecards", force: :cascade do |t|
     t.date     "biz_date"
     t.integer  "attn_ctgr"
@@ -64,10 +84,11 @@ ActiveRecord::Schema.define(version: 20151214081224) do
     t.datetime "work_end_time"
     t.datetime "rest_start_time"
     t.datetime "rest_end_time"
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
     t.integer  "user_id"
-    t.integer  "wf_status",       default: 0
+    t.integer  "wf_status",          default: 0
+    t.integer  "paid_holiday_hours", default: 0
   end
 
   create_table "users", force: :cascade do |t|
