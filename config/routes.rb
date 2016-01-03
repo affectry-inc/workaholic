@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
 
+  get 'report_requests/index'
+
+  get 'report_requests/edit'
+
   root 'static_pages#home'
   get 'contact' => 'static_pages#contact'
   get 'signup' => 'users#new'
@@ -14,6 +18,8 @@ Rails.application.routes.draw do
   get 'paid_holidays' => 'paid_holidays#index'
   get 'reports' => 'reports#index'
   get 'reports/:id/edit' => 'reports#edit', as: :edit_report
+  get 'report_requests' => 'report_requests#index'
+  get 'report_requests/:id/edit' => 'report_requests#edit', as: :edit_report_request
   resources :users
 
 

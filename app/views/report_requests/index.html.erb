@@ -1,0 +1,50 @@
+<% provide(:title, '提出依頼一覧') %>
+<h1>提出依頼一覧</h1>
+
+<div class="row">
+  <div class="col-md-10 col-md-offset-1">
+<table class="table table-bordered table-condensed">
+  <thead>
+    <tr align="center">
+      <th class="centerized">提出物</th>
+      <th class="centerized">表示開始</th>
+      <th class="centerized">提出期限</th>
+      <th class="centerized">対象者</th>
+      <th class="centerized">未提出</th>
+      <th class="centerized">承認待ち</th>
+      <th class="centerized">承認済み</th>
+      <th class="centerized"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr data-target-id="hist_1" align="center">
+      <th class="">11月分経費</th>
+      <th class="centerized">2015/11/01</th>
+      <th class="centerized">2015/12/04</th>
+      <th class="centerized">9名</th>
+      <th class="centerized">4名</th>
+      <th class="centerized">2名</th>
+      <th class="centerized">3名</th>
+      <th class="centerized">
+        <div class="glyphicon glyphicon-pencil" style="cursor: pointer;"></div>
+        <div class="glyphicon glyphicon-th-list" style="cursor: pointer;"></div>
+      </th>
+    </tr>
+    <tr data-target-id="hist_2" align="center">
+      <th class="">週報（12月第1週分）</th>
+      <th class="centerized">2015/11/30</th>
+      <th class="centerized">2015/12/11</th>
+      <th class="centerized">2名</th>
+      <th class="centerized">0名</th>
+      <th class="centerized">0名</th>
+      <th class="centerized">2名</th>
+      <th class="centerized">
+        <div class="glyphicon glyphicon-pencil" style="cursor: pointer;"></div>
+        <div class="glyphicon glyphicon-th-list" style="cursor: pointer;"></div>
+      </th>
+    </tr>
+  </tbody>
+</table>
+<%= link_to "新規", edit_report_request_path(0), class: "col-md-12 btn btn-info" %>
+</div>
+</div>
