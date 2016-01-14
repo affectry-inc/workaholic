@@ -1,8 +1,10 @@
 Rails.application.routes.draw do
 
-  get 'report_requests/index'
+  # get 'report_submissions/index'
 
-  get 'report_requests/edit'
+  # get 'report_requests/index'
+
+  # get 'report_requests/edit'
 
   root 'static_pages#home'
   get 'contact' => 'static_pages#contact'
@@ -13,13 +15,24 @@ Rails.application.routes.draw do
   resources :timecards do
     member do
       post 'workflow'
+      post 'apply_all'
     end
   end
   get 'paid_holidays' => 'paid_holidays#index'
-  get 'reports' => 'reports#index'
-  get 'reports/:id/edit' => 'reports#edit', as: :edit_report
-  get 'report_requests' => 'report_requests#index'
-  get 'report_requests/:id/edit' => 'report_requests#edit', as: :edit_report_request
+  # get 'reports' => 'reports#index'
+  # get 'reports/:id/edit' => 'reports#edit', as: :edit_report
+  resources :reports
+  get 'report_download' => 'report_submissions#download'
+  get 'my_reports' => 'reports#my_reports'
+  # get 'report_requests' => 'report_requests#index'
+  # get 'report_requests/:id/edit' => 'report_requests#edit', as: :edit_report_request
+  # resources :report_requests
+  # get 'report_submissions' => 'report_submissions#index'
+  resources :report_submissions do
+    member do
+      post 'approve'
+    end
+  end
   resources :users
 
 

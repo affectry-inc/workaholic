@@ -84,6 +84,9 @@ class TimecardsController < ApplicationController
 
       @monthly_timecards[@monthly_timecards.length] = tc
     end
+    @my_applicants = Approver.where(approver_user_id: current_user.id).where.not(user_id: current_user.id)
+    my_group_ids = GroupMember.where(user_id: current_user.id).pluck(:group_id)
+    @my_group_members = GroupMember.where(group_id: my_group_ids).where.not(user_id: current_user.id)
   end
 
   def show
@@ -211,6 +214,38 @@ class TimecardsController < ApplicationController
 
     redirect_to timecards_path(user: @timecard.user_id,
                                year: @timecard.biz_date.year, month: @timecard.biz_date.month)
+  end
+
+  def apply_all
+    user = User.find(params[:id])
+    if user.use_def_times
+      def_work_start_time = user.def_work_start_time || Date.today.to_time
+      def_work_end_time   = user.def_work_end_time || Date.today.to_time
+      def_rest_start_time = user.def_rest_start_time || Date.today.to_time
+      def_rest_end_time   = user.def_rest_end_time || Date.today.to_time
+    end
+    target_dates = params[:apply_all_target_dates_form].split
+    target_dates.each do |td|
+      date = Date.parse(td)
+      timecards = Timecard.where(user_id: user.id).where(biz_date: date)
+      if timecards.empty?
+        tc = Timecard.new
+        tc.biz_date = date
+        tc.attn_ctgr = 0
+        tc.work_start_time = sum_date_time(date, def_work_start_time)
+        tc.work_end_time = sum_date_time(date, def_work_end_time)
+        tc.rest_start_time = sum_date_time(date, def_rest_start_time)
+        tc.rest_end_time = sum_date_time(date, def_rest_end_time)
+	tc.user_id = user.id
+	tc.wf_status = 5
+	tc.save
+      else
+        timecards.first.update_attribute(:wf_status, 5)
+      end
+    end
+    
+    flash[:success] = "#{target_dates.count}件を提出しました。"
+    redirect_to timecards_path(user: user.id, year: params[:year], month: params[:month])
   end
 
   private

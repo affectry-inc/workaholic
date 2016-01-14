@@ -1,10 +1,41 @@
 <% provide(:title, '勤怠一覧') %>
 
-<% if @user.id != current_user.id %>
-  <div style="float: left; margin-top: 20px; margin-left: 50px">
-    <h3><%= @user.name %></h3>
+<div class="row">
+<div class="col-md-2 side-menu-member">
+  <div class="panel panel-default panel-member" style="margin-top: 30px;">
+    <div class="panel-heading">
+      勤怠を見る
+    </div>
+    <ul class="nav nav-pills nav-stacked nav-member">
+      <li <%= 'class="active"'.html_safe if @user.id == current_user.id  %>>
+          <%= link_to current_user.name,
+              timecards_path(user: current_user.id, year: @b_date.year, month: @b_date.month) %>
+      </li>
+      <hr style="margin: 2px 10px;">
+      <% @my_applicants.each do |ap| %>
+        <li <%= 'class="active"'.html_safe if ap.user_id == @user.id  %>>
+          <%= link_to timecards_path(user: ap.user_id, year: @b_date.year, month: @b_date.month) do %>
+            <%= User.find(ap.user_id).name %>
+	    <% applied_count = Timecard.where(user_id: ap.user_id).where(wf_status: 5).count %>
+	    <% if applied_count > 0 %>
+	      <span class="badge pull-right"><%= applied_count %></span>
+	    <% end %>
+          <% end %>
+	</li>
+      <% end %>
+      <hr style="margin: 2px 10px;">
+      <% @my_group_members.each do |gm| %>
+        <li <%= 'class="active"'.html_safe if gm.user_id == @user.id  %>>
+          <%= link_to timecards_path(user: gm.user_id, year: @b_date.year, month: @b_date.month) do %>
+            <%= User.find(gm.user_id).name %>
+          <% end %>
+	</li>
+      <% end %>
+    </ul>
   </div>
-<% end %>
+</div>
+
+<div class="col-md-10">
 
 <h1><%= @b_date.year %>年<%= @b_date.month %>月</h1>
 
@@ -65,13 +96,21 @@
       <th class="centerized" colspan="2">業務</th>
       <th class="centerized" colspan="2">休憩</th>
       <th class="centerized" rowspan="2">有給休暇<br>（時間）</th>
-      <th class="centerized" rowspan="2">ステータス</th>
+      <th class="centerized col-md-2" rowspan="">
+        <% if @user.id == current_user.id %>
+	  <%= button_to 'まとめて提出', apply_all_timecard_path(@user.id),
+			data: {confirm: 'まとめて提出しますか？'},
+	                params: {apply_all_target_dates_form: '', year: @b_date.year, month: @b_date.month},
+			id: 'apply-all', class: 'btn btn-default btn-xs', style: 'width:90px;height:18px;' %>
+	<% end %>
+      </th>
     </tr>
     <tr align="center">
       <th class="centerized">開始</th>
       <th class="centerized">終了</th>
       <th class="centerized">開始</th>
       <th class="centerized">終了</th>
+      <th class="centerized">ステータス</th>
     </tr>
   </thead>
 
@@ -80,6 +119,7 @@
     <% work_days = 0 %><!-- 勤務日数 -->
     <% off_days = 0 %><!-- 休暇日数 -->
     <% work_mins = 0 %><!-- 勤務時間 -->
+    <% apply_all_target_dates = [] %><!-- 一括申請の対象日付 -->
     <% @monthly_timecards.each do |tc| %>
       <% if tc.is_new %>
 	<% data_link = new_timecard_path(biz_date: tc.biz_date, user: @user.id) %>
@@ -108,6 +148,7 @@
       <% wf_status_color = '' %>
       <% if (tc.wf_status == 0 || tc.wf_status == 2) && tc.biz_date < Date.today %>
         <% wf_status_color = 'style="color:red;"' %>
+	<% apply_all_target_dates << tc.biz_date if tc.holiday_ctgr == 0 || tc.attn_ctgr == 0 %>
       <% elsif tc.wf_status == 5 %>
         <% wf_status_color = 'style="color:blue;"' %>
       <% elsif tc.wf_status == 9 %>
@@ -141,8 +182,45 @@
   </tbody>
 </table>
 
+<%= hidden_field_tag 'apply_all_target_dates', apply_all_target_dates %>
+
+</div>
+
 <script>
   $("tr[data-link]").click(function() {
     window.location = $(this).data("link")
+  })
+
+  // 固定する場所が存在することの確認
+  if( $('.side-menu-member .panel-member').length > 0 ){
+    var baseSelector = '.side-menu-member'
+    var fixingSelector = baseSelector + ' .panel-member'
+
+    $(window).on('load scroll resize', function(){
+      //var baseTop = $(baseSelector).offset().top
+
+      //固定開始位置より後にスクロールされた場合
+      if( $(window).scrollTop() > 30 ){
+        $(fixingSelector).addClass('fixed')
+        $(baseSelector).height($(fixingSelector).outerHeight())
+        $(fixingSelector).width($(baseSelector).width()-2)
+
+       // if( $(window).scrollTop() > 500 ){
+       //   $(fixingSelector).removeClass('fixed')
+       //   $(fixingSelector).css('margin-top','500px')
+       //   $(fixingSelector).width('')
+       // }
+
+      //固定開始位置以前にスクロールされた場合
+      } else {
+        $(fixingSelector).removeClass('fixed')
+        $(baseSelector).height('')
+        $(fixingSelector).width('')
+      }
+    })
+  }
+
+  $('#apply-all').click(function() {
+    $('[name="apply_all_target_dates_form"]').val($('#apply_all_target_dates').val())
   })
 </script>

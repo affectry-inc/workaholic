@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151221060502) do
+ActiveRecord::Schema.define(version: 20160113081650) do
 
   create_table "approvers", force: :cascade do |t|
     t.integer  "user_id"
@@ -75,6 +75,31 @@ ActiveRecord::Schema.define(version: 20151221060502) do
     t.date     "expiration_date"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+  end
+
+  create_table "report_requests", force: :cascade do |t|
+    t.integer  "report_id"
+    t.integer  "submitter_user_id"
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
+    t.boolean  "approved",          default: false
+  end
+
+  create_table "report_submissions", force: :cascade do |t|
+    t.integer  "report_request_id"
+    t.string   "file_name"
+    t.datetime "submission_time"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
+  create_table "reports", force: :cascade do |t|
+    t.integer  "receiver_user_id"
+    t.string   "report_name"
+    t.date     "beginning_date"
+    t.date     "due_date"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
   end
 
   create_table "timecards", force: :cascade do |t|

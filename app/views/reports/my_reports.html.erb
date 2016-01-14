@@ -1,0 +1,58 @@
+<% provide(:title, '提出物一覧') %>
+<h1>提出物一覧</h1>
+
+<div class="row">
+  <div class="col-md-10 col-md-offset-1">
+<table class="table table-bordered table-condensed">
+  <thead>
+    <tr align="center">
+      <th class="centerized">提出物</th>
+      <th class="centerized">提出先</th>
+      <th class="centerized">提出期限</th>
+      <th class="centerized">ステータス</th>
+      <th class="centerized col-md-5">ファイル</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @reports.each do |r| %>
+      <% rr = r.report_requests.find_by(submitter_user_id: current_user.id) %>
+      <tr align="center">
+        <th class=""><%= r.report_name %></th>
+        <th class="centerized"><%= @users.find(r.receiver_user_id).name %></th>
+        <th class="centerized"><%= r.due_date.to_s(:y_slash_m_slash_d) %></th>
+        <th class="centerized">
+	  <% if rr.approved %>
+	    <span style="color:silver;">承認済</span>
+	  <% elsif r.report_submissions.count == 0 %>
+	    <span style="color:red;">未提出</span>
+	  <% else %>
+	    <span style="color:blue;">提出済み</span>
+	  <% end %>
+	</th>
+        <th class="">
+	  <% r.report_submissions.each_with_index do |rs, i|%>
+	    <%= '<br>'.html_safe if i != 0 %>
+	    <%= rs.file_name %>
+	    <% unless rr.approved %>
+              <%= link_to "削除", report_submission_path(rs.id), method: :delete, 
+	                   data: {confirm: '削除しますか？'}, class: "btn btn-default btn-xs" %>
+	    <% end %>
+	  <% end%>
+	    <% unless rr.approved %>
+	    <%= form_for @report_submission, html: {class: 'form-horizontal'} do |f| %>
+              <%= f.hidden_field :report_request_id, value: rr.id %>
+	      <div class="input-group">
+	        <%= f.file_field :upload_file, class: 'form-control upload-file' %>
+	        <div class="input-group-btn">
+	          <%= f.submit "提出", class: 'form-control btn btn-default btn-xs' %>
+	        </div>
+	      </div>
+	    <% end %>
+	  <% end %>
+        </th>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+</div>
+</div>

@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  receiver_user_id: 1
+  report_name: MyString
+  beginning_date: 2016-01-10
+  due_date: 2016-01-10
+
+two:
+  receiver_user_id: 1
+  report_name: MyString
+  beginning_date: 2016-01-10
+  due_date: 2016-01-10

@@ -10,7 +10,7 @@
       <th class="middled">Name</th>
       <th class="middled">Email</th>
       <th class="middled">Tel</th>
-      <% if current_user.admin? && !current_user?(user)%>
+      <% if current_user.admin? %>
         <th class="centerized middled"></th>
       <% end %>
     </tr>
@@ -19,12 +19,12 @@
   <% @users.each do |user| %>
     <tr>
       <td class="centerized middled"><%= gravatar_for user, size: 50 %></td>
-      <td class="middled"><%= link_to user.name, timecards_path(user: user.id) %></td>
+      <td class="middled"><%= link_to user.name, user %></td>
       <td class="middled"><%= mail_to user.email, user.email %></td>
       <td class="middled"><a href="tel:0351145685">03-5114-5685</a></td>
       <% if current_user.admin? && !current_user?(user)%>
         <td class="centerized middled">
-          |<%= link_to "delete", user, method: :delete, data: {confirm: "You sure?"} %>
+          <%= link_to "delete", user, method: :delete, data: {confirm: "You sure?"} %>
         </td>
       <% end %>
     </tr>

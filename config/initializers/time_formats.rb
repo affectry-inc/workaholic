@@ -7,6 +7,7 @@
 
 # カスタムフォーマットを定義
 Time::DATE_FORMATS[:h_colon_m] = "%H:%M"
+Time::DATE_FORMATS[:slashed_date_h_colon_m] = "%Y/%m/%d %H:%M"
 Date::DATE_FORMATS[:m_slash_d] = "%m/%d"
 Date::DATE_FORMATS[:y_slash_m] = "%Y/%m"
 Date::DATE_FORMATS[:y_slash_m_slash_d] = "%Y/%m/%d"

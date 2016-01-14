@@ -1,2 +1,82 @@
-<h1>Reports#edit</h1>
-<p>Find me in app/views/reports/edit.html.erb</p>
+<% provide(:title, '提出依頼') %>
+<h1>提出依頼</h1>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <%= form_for(@report) do |f| %>
+      <% @errors = @report.errors %>
+      <%= render 'shared/error_messages' %>
+
+      <div class="form-group">
+        <%= f.label :report_name, "提出物名称" %>
+        <%= f.text_field :report_name, class: 'form-control' %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :beginning_date, "表示開始" %>
+        <%= f.date_field :beginning_date, class: 'form-control' %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :due_date, "提出期限" %>
+        <%= f.date_field :due_date, class: 'form-control' %>
+      </div>
+
+      <div class="form-group">
+        <%= f.hidden_field :target_user_ids, value: @target_user_ids %>
+        <%= f.label :target_users do %>
+	  提出対象者 <small>※提出済の人は対象外にできません</small>
+	<% end %>
+        <div class="form-group row">
+          <div class="col-md-5">
+	    <% disabled_user_ids = [] %>
+	    <% @report.report_requests.each do |rr| %>
+	      <% disabled_user_ids << rr.submitter_user_id if rr.report_submissions.count > 0 %>
+	    <% end %>
+            <%= select_tag :target_users, 
+                           options_for_select(@target_users.map {|u| [u.name, u.id]}, disabled: disabled_user_ids),
+                           class: 'form-control', size: 5, style: 'height: 130px;', multiple: true %>
+          </div>
+          <div class="col-md-2" style="padding-left: 5px;">
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <%= button_tag '⇨', id: 'move-right', type: 'button' %>
+            <br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <%= button_tag '⇦', id: 'move-left', type: 'button' %>
+          </div>
+          <div class="col-md-5">
+            <%= select_tag :untarget_users, options_for_select(@untarget_users.map {|u| [u.name, u.id]}), 
+                            class: 'form-control', size: 5, style: 'height: 130px;', multiple: true %>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <%= link_to "戻る", reports_path, class: "col-md-6 btn btn-default" %>
+        <%= f.submit "保存", name: "save", class: "col-md-6 btn btn-info" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script type="text/javascript">
+  function moveOption(event) {
+    $("#" + event.data.from + " option:selected").each(function () {
+      $(this).appendTo($("#" + event.data.to));
+      $(this).prop("selected", false);// 選択状態の解除
+    });
+  }
+  // 「⇨」ボタンのクリック時
+  $('#move-right').on("click", {from: "target_users", to: "untarget_users"}, moveOption);
+
+  // 「⇦」ボタンのクリック時
+  $('#move-left').on("click", {from: "untarget_users", to: "target_users"}, moveOption);
+
+  $('form').submit(function(){
+    var arr = []
+    var obj = $('#target_users').children();
+    for (var i=0; i<obj.length; i++) {
+      arr.push(obj.eq(i).val())
+    }
+    $('#report_target_user_ids').val(arr.join(' '))
+  })
+</script>

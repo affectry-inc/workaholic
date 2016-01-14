@@ -10,29 +10,29 @@
       <th class="centerized">表示開始</th>
       <th class="centerized">提出期限</th>
       <th class="centerized">対象者</th>
-      <th class="centerized">未提出</th>
       <th class="centerized">提出済み</th>
+      <th class="centerized">未提出</th>
       <th class="centerized"></th>
     </tr>
   </thead>
   <tbody>
     <% @reports.each do |r| %>
-      <tr align="center">
+      <tr data-target-id="hist_1" align="center">
         <th class=""><%= r.report_name %></th>
         <th class="centerized"><%= r.beginning_date.to_s(:y_slash_m_slash_d) %></th>
         <th class="centerized"><%= r.due_date.to_s(:y_slash_m_slash_d) %></th>
         <th class="centerized"><%= r.report_requests.count %>名</th>
-        <th class="centerized"><%= r.report_requests.count - r.report_submissions.count %>名</th>
         <th class="centerized"><%= r.report_submissions.count %>名</th>
+        <th class="centerized"><%= r.report_requests.count - r.report_submissions.count %>名</th>
         <th class="centerized">
-          <%= link_to "", edit_report_path(r.id), class: "glyphicon glyphicon-pencil" %>
+          <%= link_to "", edit_report_request_path(r.id), class: "glyphicon glyphicon-pencil" %>
           &nbsp;
-          <%= link_to "", report_submissions_path(r_id: r.id), class: "glyphicon glyphicon-th-list" %>
+          <%= link_to "", report_submissions_path(r.id), class: "glyphicon glyphicon-th-list" %>
         </th>
       </tr>
     <% end %>
   </tbody>
 </table>
-<%= link_to "新規", new_report_path(0), class: "col-md-12 btn btn-info" %>
+<%= link_to "新規", edit_report_request_path(0), class: "col-md-12 btn btn-info" %>
 </div>
 </div>

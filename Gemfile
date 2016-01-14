@@ -36,6 +36,10 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 gem 'holiday_japan'
 gem 'jc-validates_timeliness'
+gem 'bootstrap-switch-rails', '3.3.3'
+# source 'https://rails-assets.org' do
+#   gem 'rails-assets-bootstrap-fileinput', '4.2.8'
+# end
 
 group :development, :test do
   # Use sqlite3 as the database for Active Record

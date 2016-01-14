@@ -1,0 +1,66 @@
+<% provide(:title, '提出物') %>
+<h1>提出物</h1>
+
+<div class="row">
+  <div class="col-md-10 col-md-offset-1">
+<table class="table table-bordered table-condensed">
+  <thead>
+    <tr align="center">
+      <th class="centerized">提出者</th>
+      <th class="centerized">提出日時</th>
+      <th class="centerized">ファイル</th>
+      <th class="centerized">ステータス</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @report.report_requests.each do |rr| %>
+      <tr align="center">
+        <th class="centerized"><%= User.find(rr.submitter_user_id).name %></th>
+        <th class="centerized">
+	  <% rr.report_submissions.each do |rs|%>
+	    <%= rs.submission_time.to_s(:slashed_date_h_colon_m) %>
+	  <% end %>
+	</th>
+        <th class="">
+	  <% rr.report_submissions.each do |rs|%>
+	    <%= rs.file_name %>
+            <%= link_to "ダウンロード", report_download_path(rs_id: rs.id),  class: "btn btn-default btn-xs" %>
+	  <% end %>
+        </th>
+	<th class="centerized">
+	  <% if rr.report_submissions.count > 0 %>
+	    <%= check_box :report_request, :approved, 
+	                   {class: 'approved_checkbox' ,checked: rr.approved, 
+			    data: {link: "", rrid: rr.id}}, true, false %>
+	  <% end %>
+	</th>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%= link_to "戻る", reports_path, class: "col-md-12 btn btn-info" %>
+</div>
+</div>
+
+<script type="text/javascript">
+  $('.approved_checkbox').bootstrapSwitch({
+    size: 'mini',
+    onText: '承認済',
+    offText: '未承認',
+    onColor: 'default',
+    offColor: 'primary',
+    labelWidth: 3
+  });
+  $('.approved_checkbox').on('switchChange.bootstrapSwitch', function(event, state) {
+    $.ajax({
+            url: "report_submissions/" + $(this).data("rrid") + "/approve",
+            type: "POST",
+            data: {approved: state},
+            dataType: "html",
+            success: function(data) {
+            },
+            error: function(data) {
+            }
+    });
+  });
+</script>

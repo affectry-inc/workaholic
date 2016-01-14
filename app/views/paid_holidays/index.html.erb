@@ -13,124 +13,70 @@
     </tr>
   </thead>
   <tbody>
-    <tr data-target-id="hist_1" align="center" style="cursor: pointer;" class="active">
-      <th class="centerized">2014/10/01</th>
-      <th class="centerized">2016/09/30</th>
-      <th class="centerized">5日 / 40時間</th>
-      <th class="centerized">4日 / 40時間</th>
-      <th class="centerized">1日 / 0時間</th>
-    </tr>
-    <tr data-target-id="hist_2" align="center" style="cursor: pointer;">
-      <th class="centerized">2015/10/01</th>
-      <th class="centerized">2017/09/30</th>
-      <th class="centerized">7日 / 40時間</th>
-      <th class="centerized">0日 / 29時間</th>
-      <th class="centerized">7日 / 11時間</th>
-    </tr>
+    <% sum_given_days = 0 %>
+    <% sum_given_hours = 0 %>
+    <% sum_usage_days = 0 %>
+    <% sum_usage_hours = 0 %>
+    <% @paid_holidays.each_with_index do |ph, idx| %>
+      <% if idx == 0 %>
+        <tr data-target-id="hist_<%= ph.id %>" align="center" style="cursor: pointer;" class="active">
+      <% else %>
+        <tr data-target-id="hist_<%= ph.id %>" align="center" style="cursor: pointer;">
+      <% end %>
+        <th class="centerized"><%= ph.beginning_date.to_s(:y_slash_m_slash_d) %></th>
+        <th class="centerized"><%= ph.expiration_date.to_s(:y_slash_m_slash_d) %></th>
+        <th class="centerized"><%= ph.days %>日 / <%= ph.hours %>時間</th>
+	<% usage_days = ph.paid_holiday_usages.sum(:days) %>
+	<% usage_hours = ph.paid_holiday_usages.sum(:hours) %>
+        <th class="centerized"><%= usage_days %>日 / <%= usage_hours %>時間</th>
+        <th class="centerized"><%= ph.days - usage_days %>日 / <%= ph.hours - usage_hours %>時間</th>
+      </tr>
+      <% sum_given_days  += ph.days %>
+      <% sum_given_hours += ph.hours %>
+      <% sum_usage_days  += usage_days %>
+      <% sum_usage_hours += usage_hours %>
+    <% end %>
   </tbody>
   <tbody>
     <tr class="info" align="center">
       <th class="centerized" colspan="2">合計</th>
-      <th class="centerized">12日 / 80時間</th>
-      <th class="centerized">4日 / 69時間</th>
-      <th class="centerized">8日 / 11時間</th>
+      <th class="centerized"><%= sum_given_days %>日 / <%= sum_given_hours %>時間</th>
+      <th class="centerized"><%= sum_usage_days %>日 / <%= sum_usage_hours %>時間</th>
+      <th class="centerized">
+        <%= sum_given_days - sum_usage_days %>日 / <%= sum_given_hours - sum_usage_hours %>時間
+      </th>
     </tr>
   </tbody>
 </table>
 
 <br>
 <h3 class="center">使用履歴</h3>
-<table id="hist_1" class="table hist">
-  <thead>
-    <tr align="center">
-      <th class="centerized" colspan="2">2014/10/01~2016/09/30</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="centerized">2014/10/15</td>
-      <td class="centerized">1日</td>
-    </tr>
-    <tr>
-      <td class="centerized">2014/11/05</td>
-      <td class="centerized">4時間</td>
-    </tr>
-    <tr>
-      <td class="centerized">2015/01/15</td>
-      <td class="centerized">1日</td>
-    </tr>
-    <tr>
-      <td class="centerized">2015/02/02</td>
-      <td class="centerized">7時間</td>
-    </tr>
-    <tr>
-      <td class="centerized">2015/02/04</td>
-      <td class="centerized">7時間</td>
-    </tr>
-    <tr>
-      <td class="centerized">2015/03/22</td>
-      <td class="centerized">5時間</td>
-    </tr>
-    <tr>
-      <td class="centerized">2015/05/20</td>
-      <td class="centerized">1日</td>
-    </tr>
-    <tr>
-      <td class="centerized">2015/05/21</td>
-      <td class="centerized">7時間</td>
-    </tr>
-    <tr>
-      <td class="centerized">2015/06/03</td>
-      <td class="centerized">7時間</td>
-    </tr>
-    <tr>
-      <td class="centerized">2015/06/20</td>
-      <td class="centerized">3時間</td>
-    </tr>
-    <tr>
-      <td class="centerized">2015/11/01</td>
-      <td class="centerized">1日</td>
-    </tr>
-  </tbody>
-</table>
-
-<table id="hist_2" class="table hist" style="display:none;">
-  <thead>
-    <tr align="center">
-      <th class="centerized" colspan="2">2015/10/01~2017/09/30</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="centerized">2015/11/08</td>
-      <td class="centerized">2時間</td>
-    </tr>
-    <tr>
-      <td class="centerized">2015/12/12</td>
-      <td class="centerized">4時間</td>
-    </tr>
-    <tr>
-      <td class="centerized">2016/02/15</td>
-      <td class="centerized">7時間</td>
-    </tr>
-    <tr>
-      <td class="centerized">2016/03/22</td>
-      <td class="centerized">5時間</td>
-    </tr>
-    <tr>
-      <td class="centerized">2016/05/20</td>
-      <td class="centerized">4時間</td>
-    </tr>
-    <tr>
-      <td class="centerized">2016/05/21</td>
-      <td class="centerized">5時間</td>
-    </tr>
-    <tr>
-      <td class="centerized">2016/11/01</td>
-      <td class="centerized">2時間</td>
-    </tr>
-  </tbody>
-</table>
+<% @paid_holidays.each_with_index do |ph, idx| %>
+  <% if idx == 0 %>
+    <table id="hist_<%= ph.id %>" class="table hist">
+  <% else %>
+    <table id="hist_2" class="table hist" style="display:none;">
+  <% end %>
+    <thead>
+      <tr align="center">
+        <th class="centerized" colspan="2">
+	  <%= ph.beginning_date.to_s(:y_slash_m_slash_d) %>~<%= ph.expiration_date.to_s(:y_slash_m_slash_d) %>
+	</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% ph.paid_holiday_usages.each do |phu| %>
+        <tr>
+          <td class="centerized"><%= phu.usage_date.to_s(:y_slash_m_slash_d) %></td>
+          <td class="centerized">
+	    <%= phu.days.to_s + '日　' if phu.days > 0 %>
+	    <%= phu.hours.to_s + '時間' if phu.hours > 0 %>
+	  </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
 </div>
 </div>
 

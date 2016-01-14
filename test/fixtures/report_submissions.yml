@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  report_request_id: 1
+  submission_date: 2016-01-10
+  wf_status: 1
+
+two:
+  report_request_id: 1
+  submission_date: 2016-01-10
+  wf_status: 1

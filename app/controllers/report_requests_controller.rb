@@ -3,6 +3,5 @@ class ReportRequestsController < ApplicationController
   end
 
   def edit
-    @report_requests = Timecard.new
   end
 end
