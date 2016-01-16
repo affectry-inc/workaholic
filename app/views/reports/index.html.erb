@@ -23,7 +23,7 @@
         <th class="centerized"><%= r.due_date.to_s(:y_slash_m_slash_d) %></th>
         <th class="centerized"><%= r.report_requests.count %>名</th>
         <th class="centerized"><%= r.report_requests.count - r.report_submissions.count %>名</th>
-        <th class="centerized"><%= r.report_submissions.count %>名</th>
+        <th class="centerized"><%= r.report_submissions.group(:report_request_id).length %>名</th>
         <th class="centerized">
           <%= link_to "", edit_report_path(r.id), class: "glyphicon glyphicon-pencil" %>
           &nbsp;

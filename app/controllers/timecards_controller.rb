@@ -248,6 +248,16 @@ class TimecardsController < ApplicationController
     redirect_to timecards_path(user: user.id, year: params[:year], month: params[:month])
   end
 
+  def approve_all
+    target_ids = params[:approve_all_target_ids_form].split
+    target_ids.each do |ti|
+      Timecard.find(ti).update_attribute(:wf_status, 9)
+    end
+    
+    flash[:success] = "#{target_ids.count}件を承認しました。"
+    redirect_to timecards_path(user: params[:id], year: params[:year], month: params[:month])
+  end
+
   private
 
     def timecard_params

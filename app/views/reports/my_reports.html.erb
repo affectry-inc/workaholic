@@ -23,14 +23,14 @@
         <th class="centerized">
 	  <% if rr.approved %>
 	    <span style="color:silver;">承認済</span>
-	  <% elsif r.report_submissions.count == 0 %>
+	  <% elsif rr.report_submissions.count == 0 %>
 	    <span style="color:red;">未提出</span>
 	  <% else %>
 	    <span style="color:blue;">提出済み</span>
 	  <% end %>
 	</th>
         <th class="">
-	  <% r.report_submissions.each_with_index do |rs, i|%>
+	  <% rr.report_submissions.each_with_index do |rs, i|%>
 	    <%= '<br>'.html_safe if i != 0 %>
 	    <%= rs.file_name %>
 	    <% unless rr.approved %>

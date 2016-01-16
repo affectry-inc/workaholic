@@ -16,6 +16,7 @@ Rails.application.routes.draw do
     member do
       post 'workflow'
       post 'apply_all'
+      post 'approve_all'
     end
   end
   get 'paid_holidays' => 'paid_holidays#index'

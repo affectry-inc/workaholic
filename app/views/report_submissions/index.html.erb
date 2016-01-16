@@ -22,7 +22,8 @@
 	  <% end %>
 	</th>
         <th class="">
-	  <% rr.report_submissions.each do |rs|%>
+	  <% rr.report_submissions.each_with_index do |rs, i|%>
+	    <%= '<br>'.html_safe if i != 0 %>
 	    <%= rs.file_name %>
             <%= link_to "ダウンロード", report_download_path(rs_id: rs.id),  class: "btn btn-default btn-xs" %>
 	  <% end %>

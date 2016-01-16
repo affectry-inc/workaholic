@@ -65,7 +65,7 @@ class ReportsController < ApplicationController
   end
 
   def my_reports
-    @reports = Report.joins(:report_requests).where(report_requests: {submitter_user_id: current_user.id})
+    @reports = Report.reports_of(current_user.id)
     @users = User.all
     @report_submission = ReportSubmission.new
   end
