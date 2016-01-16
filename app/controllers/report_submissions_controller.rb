@@ -19,6 +19,7 @@ class ReportSubmissionsController < ApplicationController
     dir = "workaholic/reports/#{report_request_id}/"
 
     ftp = Net::FTP.new
+    ftp.passive = true
     ftp.connect(ENV["FTP_HOST"])
     ftp.login(ENV["FTP_USER"], ENV["FTP_PASSWORD"])
     ftp.binary = true
@@ -72,6 +73,7 @@ class ReportSubmissionsController < ApplicationController
     filepath_local = File.join(dir_local, filename_store)
 
     ftp = Net::FTP.new
+    ftp.passive = true
     ftp.connect(ENV["FTP_HOST"])
     ftp.login(ENV["FTP_USER"], ENV["FTP_PASSWORD"])
     ftp.binary = true
