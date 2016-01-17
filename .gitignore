@@ -22,4 +22,5 @@
 /reports/*
 
 .env
+
 .byebug_history

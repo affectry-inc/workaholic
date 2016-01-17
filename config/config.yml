@@ -1,0 +1,15 @@
+# config file for constants
+#
+# FTP_BASE_DIR: Base directory for ftp.
+#               You need to create the directories on the server (both under root and html).
+
+development:
+  # Change for each machine.
+  FTP_BASE_DIR: "workaholic/shizukas_mba"
+
+test:
+  FTP_BASE_DIR: "workaholic/test_env"
+
+production:
+  FTP_BASE_DIR: "workaholic/linkage_kintai"
+
