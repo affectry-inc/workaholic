@@ -64,6 +64,16 @@ class ReportsController < ApplicationController
     end
   end
 
+  def destroy
+    if Report.find(params[:id]).destroy
+      flash[:success] = "削除しました。"
+    else
+      flash[:danger] = "削除に失敗しました。"
+    end
+
+    redirect_to reports_path
+  end
+
   def my_reports
     @reports = Report.reports_of(current_user.id)
     @users = User.all

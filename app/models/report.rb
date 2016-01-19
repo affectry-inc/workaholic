@@ -1,5 +1,5 @@
 class Report < ActiveRecord::Base
-  has_many :report_requests
+  has_many :report_requests, dependent: :destroy
   has_many :report_submissions, through: :report_requests
 
   validates :report_name, presence: true

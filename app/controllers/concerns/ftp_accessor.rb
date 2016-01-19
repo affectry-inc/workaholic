@@ -3,6 +3,8 @@ require 'net/ftp'
 module FtpAccessor
   # Create following directories under 'FTP_BASE_DIR'.
   #  reports/
+  #
+  # Create following directories under html/'FTP_BASE_DIR'.
 
   def self.put_report(filename, report_request_id, local_filepath)
     remote_dir = File.join("reports", report_request_id.to_s)
@@ -87,7 +89,7 @@ module FtpAccessor
 
   def self.get_public(filename, remote_dir)
     r_filename = filename.unpack("H*")[0]
-    r_dir = File.join(File.join(ENV["FTP_HOST"], APP_CONFIG['FTP_BASE_DIR']), remote_dir)
+    r_dir = File.join(File.join(ENV["FTP_HOST_URL"], APP_CONFIG['FTP_BASE_DIR']), remote_dir)
     return File.join(r_dir, r_filename)
   end
 

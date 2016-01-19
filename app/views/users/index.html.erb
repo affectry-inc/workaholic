@@ -18,7 +18,8 @@
   <tbody>
   <% @users.each do |user| %>
     <tr>
-      <td class="centerized middled"><%= gravatar_for user, size: 50 %></td>
+      <!--<td class="centerized middled"><%= gravatar_for user, size: 50 %></td>-->
+      <td class="middled"><%= image_tag 'avatar_unknown_00.png', size: '60x60' %></td>
       <td class="middled"><%= link_to user.name, user %></td>
       <td class="middled"><%= mail_to user.email, user.email %></td>
       <td class="middled"><a href="tel:0351145685">03-5114-5685</a></td>

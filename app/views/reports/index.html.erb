@@ -28,12 +28,20 @@
 	  <% r.report_requests.each do |rr|%>
 	    <% submitted_count += 1 if rr.report_submissions.count > 0 %>
 	  <% end %>
-	  <%= submitted_count  %>名
+	  <%= submitted_count %>名
 	</th>
         <th class="centerized">
-          <%= link_to "", edit_report_path(r.id), class: "glyphicon glyphicon-pencil" %>
+          <%= link_to "", edit_report_path(r.id), class: "glyphicon glyphicon-pencil", title: "編集" %>
           &nbsp;
-          <%= link_to "", report_submissions_path(r_id: r.id), class: "glyphicon glyphicon-th-list" %>
+          <%= link_to "", report_submissions_path(r_id: r.id), 
+	                    class: "glyphicon glyphicon-th-list", title: "提出状況" %>
+          &nbsp;
+	  <% if submitted_count > 0 %>
+	    <span class="glyphicon glyphicon-remove" style="color:silver"></span>
+	  <% else %>
+            <%= link_to "", r, method: :delete, data: {confirm: '削除しますか？'},
+	                    class: "glyphicon glyphicon-remove", title: "削除" %>
+	  <% end %>
         </th>
       </tr>
     <% end %>
