@@ -37,4 +37,9 @@ class User < ActiveRecord::Base
   def forget
     update_attribute(:remember_digest, nil)
   end
+
+  # 事務員チェク
+  def is_secretary?
+    GroupMember.where(group_id: 3).where(user_id: id).count > 0
+  end
 end

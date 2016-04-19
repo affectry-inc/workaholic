@@ -24,3 +24,5 @@
 .env
 
 .byebug_history
+
+logfile
