@@ -221,6 +221,11 @@ input {
 
 /* side menu*/
 
+.panel-member {
+  height: 90%;
+  overflow: scroll;
+}
+
 .side-menu-member .panel-member.fixed {
   position: fixed;
   top: 30px;
