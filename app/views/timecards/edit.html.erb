@@ -18,9 +18,15 @@
       <%= f.hidden_field :remaining_paid_hours, value: @timecard.remaining_paid_hours %>
 
       <%= f.label :attn_ctgy, "勤怠区分"  %>
-      <%= f.collection_select :attn_ctgr, 
-                     Category.where("ctgr_id = ? and lang_id = ? and val <> 9", 0, 0),
-                     :val, :name, {}, {class: "form-control selectpicker"} %>
+      <% if Timecard.get_holiday_ctgr(@timecard.biz_date) == 0 %>
+        <%= f.collection_select :attn_ctgr, 
+                       Category.where("ctgr_id = ? and lang_id = ? and val <> 9", 0, 0),
+                       :val, :name, {}, {class: "form-control selectpicker"} %>
+      <% else %>
+        <%= f.collection_select :attn_ctgr, 
+                       Category.where("ctgr_id = ? and lang_id = ? and val = ?", 0, 0, 0),
+                       :val, :name, {}, {class: "form-control selectpicker"} %>
+      <% end %>
 
       <div class="form-group">
         <%= f.label :work_start_time, "勤務開始時刻" %>

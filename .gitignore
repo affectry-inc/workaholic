@@ -26,3 +26,4 @@
 .byebug_history
 
 logfile
+*.swp

@@ -33,6 +33,12 @@ class TimecardsController < ApplicationController
     @paid_days = 0
     @paid_hours = 0
     @work_mins = 0
+    work_mins_a = 0 # 00:00-04:59 0-
+    work_mins_b = 0 # 05:00-09:29 300-
+    work_mins_c = 0 # 09:30-18:29 570-
+    work_mins_d = 0 # 18:30-21:59 1110-
+    work_mins_e = 0 # 22:00-23:59 1320-
+    @work_mins_holiday = 0
     attn_ctgrs = Category.where("ctgr_id = ? and lang_id = ?", 0, 0)
     wf_status_ctgr = Category.where("ctgr_id = ? and lang_id = ?", 1, 0)
     timecards = Timecard.where(biz_date: @b_date..e_date).where(user_id: user_id)
@@ -41,49 +47,77 @@ class TimecardsController < ApplicationController
       if timecards.exists?(biz_date: date)
         tc = timecards.find_by(biz_date: date)
         tc.is_new = false
-        if tc.attn_ctgr == 0
-          @attn_days += 1 if tc.wf_status >= 5
-          @paid_hours += tc.paid_holiday_hours if tc.wf_status >= 5
-          @work_mins += (tc.work_end_time - tc.work_start_time).divmod(60)[0].to_i if tc.wf_status >= 5
-          @work_mins -= (tc.rest_end_time - tc.rest_start_time).divmod(60)[0].to_i if tc.wf_status >= 5
+        tc.holiday_ctgr = Timecard.get_holiday_ctgr(tc.biz_date)
+
+        if tc.wf_status >= 5
+          if tc.attn_ctgr == 0
+            @attn_days += 1
+            @paid_hours += tc.paid_holiday_hours
+            @work_mins += (tc.work_end_time - tc.work_start_time).div(60)
+            @work_mins -= (tc.rest_end_time - tc.rest_start_time).div(60)
+
+            if tc.holiday_ctgr == 0
+              work_start_index = tc.work_start_time.hour * 60 + tc.work_start_time.min
+              rest_start_index = tc.rest_start_time.hour * 60 + tc.rest_start_time.min
+              rest_end_index = tc.rest_end_time.hour * 60 + tc.rest_end_time.min
+              work_end_index = tc.work_end_time.hour * 60 + tc.work_end_time.min
+              work_blocks = []
+              1440.times do |i|
+                if i < work_start_index
+                  work_blocks.push 0
+                elsif i < rest_start_index
+                  work_blocks.push 1
+                elsif i < rest_end_index
+                  work_blocks.push 0
+                elsif i < work_end_index
+                  work_blocks.push 1
+                else
+                  work_blocks.push 0
+                end
+              end
+              work_mins_a += work_blocks[0...300].inject(:+) # 00:00-04:59 0-
+              work_mins_b += work_blocks[300...570].inject(:+) # 05:00-09:29 300-
+              work_mins_c += work_blocks[570...1110].inject(:+) # 09:30-18:29 570-
+              work_mins_d += work_blocks[1110...1320].inject(:+) # 18:30-21:59 1110-
+              work_mins_e += work_blocks[1320...1440].inject(:+) # 22:00-23:59 1320-
+            else
+              @work_mins_holiday += (tc.work_end_time - tc.work_start_time).div(60)
+              @work_mins_holiday -= (tc.rest_end_time - tc.rest_start_time).div(60)
+            end
+          elsif tc.attn_ctgr == 2
+            @paid_days += 1
+          end
         end
-        @paid_days += 1 if tc.attn_ctgr == 2 if tc.wf_status >= 5
       else
         tc = Timecard.new
         tc.biz_date = date
-        tc.attn_ctgr = 0
         tc.work_start_time = sum_date_time(date, def_work_start_time)
         tc.work_end_time = sum_date_time(date, def_work_end_time)
         tc.rest_start_time = sum_date_time(date, def_rest_start_time)
         tc.rest_end_time = sum_date_time(date, def_rest_end_time)
         tc.id = 999
         tc.is_new = true
+        tc.holiday_ctgr = Timecard.get_holiday_ctgr(tc.biz_date)
+        if tc.holiday_ctgr == 0
+          tc.attn_ctgr = 0
+        else
+          tc.attn_ctgr = 9
+        end
       end
-      if HolidayJapan.check(tc.biz_date)
-        tc.holiday_ctgr = 1
-        tc.attn_ctgr = 9 unless !tc.is_new and tc.attn_ctgr == 0
-      elsif tc.biz_date.wday == 0
-        tc.holiday_ctgr = 3
-        tc.attn_ctgr = 9 unless !tc.is_new and tc.attn_ctgr == 0
-      elsif tc.biz_date.wday == 6
-        tc.holiday_ctgr = 2
-        tc.attn_ctgr = 9 unless !tc.is_new and tc.attn_ctgr == 0
-      else
-        tc.holiday_ctgr = 0
+
+      if tc.holiday_ctgr == 0
         @biz_days += 1
         @absc_days += 1 if (tc.attn_ctgr == 1) && (tc.wf_status >= 5)
       end
 
-      if tc.holiday_ctgr == 1 && tc.attn_ctgr != 0
-        tc.attn_ctgr_disp = HolidayJapan.name(tc.biz_date)
-      else
-        tc.attn_ctgr_disp = attn_ctgrs.find_by(val: tc.attn_ctgr).name
-      end
-
+      tc.attn_ctgr_disp = attn_ctgrs.find_by(val: tc.attn_ctgr).name
       tc.wf_status_ctgr_disp = wf_status_ctgr.find_by(val: tc.wf_status).name
 
       @monthly_timecards[@monthly_timecards.length] = tc
     end
+    @work_mins_normal = work_mins_c
+    @work_mins_over   = work_mins_b + work_mins_d
+    @work_mins_night  = work_mins_a + work_mins_e
     @my_applicants = Approver.where(approver_user_id: current_user.id).where.not(user_id: current_user.id)
     my_group_ids = GroupMember.where(user_id: current_user.id).pluck(:group_id)
     @my_group_members = GroupMember.where(group_id: my_group_ids).where.not(user_id: current_user.id)

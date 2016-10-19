@@ -99,7 +99,36 @@
         <% color_red = '' %>
       <% end %>
       <th class="centerized" <%= color_red.html_safe %>>
-        <%= work_hours[0].to_s + " 時間 " + "%02d" % work_hours[1] + " 分" %>
+
+        <div class="dropdown">
+          <button class="btn btn-default btn-xs" type="button" id="work-breakdown-btn" data-toggle="dropdown">
+            <strong><%= work_hours[0].to_s + " 時間 " + "%02d" % work_hours[1] + " 分" %></strong>
+          </button>
+          <ul class="dropdown-menu work-breakdown" aria-labelledby="work-breakdown-btn">
+            <table style="width:100%;">
+              <tr align="center">
+                <% work_hours_normal = @work_mins_normal.divmod(60) %>
+                <th>通常</th>
+                <td><%= work_hours_normal[0].to_s + " 時間 " + "%02d" % work_hours_normal[1] + " 分" %></td>
+              </tr>
+              <tr align="center">
+                <% work_hours_over = @work_mins_over.divmod(60) %>
+                <th>時間外</th>
+                <td><%= work_hours_over[0].to_s + " 時間 " + "%02d" % work_hours_over[1] + " 分" %></td>
+              </tr>
+              <tr align="center">
+                <% work_hours_night = @work_mins_night.divmod(60) %>
+                <th>深夜</th>
+                <td><%= work_hours_night[0].to_s + " 時間 " + "%02d" % work_hours_night[1] + " 分" %></td>
+              </tr>
+              <tr align="center">
+                <% work_hours_holiday = @work_mins_holiday.divmod(60) %>
+                <th>休日</th>
+                <td><%= work_hours_holiday[0].to_s + " 時間 " + "%02d" % work_hours_holiday[1] + " 分" %></td>
+              </tr>
+            </table>
+          </ul>
+        </div>
       </th>
     </tr>
   </tbody>
@@ -181,7 +210,13 @@
 
         <tr data-link="<%= data_link %>" style="cursor: pointer;" <%= bgcolor.html_safe %>>
           <td class="centerized"><%= tc.biz_date.to_s(:y_slash_m_slash_d) %></td>
-          <td class="<%= wday_color_class.html_safe %>"><%= tc.biz_date.strftime("%a") %></td>
+          <td class="centerized <%= wday_color_class.html_safe %>">
+            <% if tc.holiday_ctgr == 1 %>
+              <%= HolidayJapan.name(tc.biz_date) %>
+            <% else %>
+              <%= l tc.biz_date, format: :day_name %>
+            <% end %>
+          </td>
           <td class="centerized" <%= attn_ctgr_color.html_safe %> ><%= tc.attn_ctgr_disp %></td>
           <% if tc.attn_ctgr == 0 %>
             <td class="centerized"><%= tc.work_start_time.to_s(:h_colon_m) %></td>
