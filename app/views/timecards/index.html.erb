@@ -3,9 +3,6 @@
 <div class="row">
 <div class="col-md-2 side-menu-member">
   <div class="panel panel-default panel-member" style="margin-top: 30px;">
-    <div class="panel-heading">
-      勤怠を見る
-    </div>
     <ul class="nav nav-pills nav-stacked nav-member">
       <li <%= 'class="active"'.html_safe if @user.id == current_user.id  %>>
           <%= link_to timecards_path(user: current_user.id, year: @b_date.year, month: @b_date.month) do %>
