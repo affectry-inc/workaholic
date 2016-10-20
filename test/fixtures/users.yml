@@ -1,3 +1,26 @@
+# == Schema Information
+#
+# Table name: users
+#
+#  id                  :integer          not null, primary key
+#  name                :string
+#  email               :string
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  password_digest     :string
+#  remember_digest     :string
+#  admin               :boolean          default(FALSE)
+#  use_def_times       :boolean          default(FALSE)
+#  def_work_start_time :time
+#  def_work_end_time   :time
+#  def_rest_start_time :time
+#  def_rest_end_time   :time
+#
+# Indexes
+#
+#  index_users_on_email  (email) UNIQUE
+#
+
 michael:
   name: Michael Example
   email: michael@example.com

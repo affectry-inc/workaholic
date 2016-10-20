@@ -1,3 +1,21 @@
+# == Schema Information
+#
+# Table name: timecards
+#
+#  id                 :integer          not null, primary key
+#  biz_date           :date
+#  attn_ctgr          :integer
+#  work_start_time    :datetime
+#  work_end_time      :datetime
+#  rest_start_time    :datetime
+#  rest_end_time      :datetime
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  user_id            :integer
+#  wf_status          :integer          default(0)
+#  paid_holiday_hours :integer          default(0)
+#
+
 class Timecard < ActiveRecord::Base
   VALID_TIME_REGEX = /\A(\d{1,2}):(\d{2})\z/
   validates :work_start_time, presence: true

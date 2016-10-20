@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: reports
+#
+#  id               :integer          not null, primary key
+#  receiver_user_id :integer
+#  report_name      :string
+#  beginning_date   :date
+#  due_date         :date
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#
+
 class Report < ActiveRecord::Base
   has_many :report_requests, dependent: :destroy
   has_many :report_submissions, through: :report_requests
