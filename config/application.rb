@@ -26,5 +26,11 @@ module AttnMngApp
     config.active_record.raise_in_transactional_callbacks = true
 
     config.autoload_paths += %W(#{config.root}/lib)
+
+    config.generators do |g|
+      g.javascripts false
+      g.helper false
+      g.test_framework false
+    end
   end
 end
