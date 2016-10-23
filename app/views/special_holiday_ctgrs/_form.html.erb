@@ -1,0 +1,21 @@
+<%= form_for(@special_holiday_ctgr) do |f| %>
+  <% if @special_holiday_ctgr.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@special_holiday_ctgr.errors.count, "error") %> prohibited this special_holiday_ctgr from being saved:</h2>
+
+      <ul>
+      <% @special_holiday_ctgr.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :title %><br>
+    <%= f.text_field :title %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

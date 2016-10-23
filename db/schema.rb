@@ -11,7 +11,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160113081650) do
+ActiveRecord::Schema.define(version: 20161023161440) do
+
+  create_table "absences", force: :cascade do |t|
+    t.integer  "timecard_id"
+    t.integer  "absence_type"
+    t.integer  "extra_holiday_id"
+    t.integer  "special_holiday_id"
+    t.boolean  "is_hourly"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.string   "comment"
+    t.boolean  "is_paid"
+    t.boolean  "is_as_attended"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  add_index "absences", ["extra_holiday_id"], name: "index_absences_on_extra_holiday_id"
+  add_index "absences", ["special_holiday_id"], name: "index_absences_on_special_holiday_id"
+  add_index "absences", ["timecard_id"], name: "index_absences_on_timecard_id"
 
   create_table "approvers", force: :cascade do |t|
     t.integer  "user_id"
@@ -27,6 +46,17 @@ ActiveRecord::Schema.define(version: 20160113081650) do
     t.string   "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "extra_holidays", force: :cascade do |t|
+    t.string   "title"
+    t.string   "description"
+    t.boolean  "is_hourly"
+    t.boolean  "is_comment_required"
+    t.boolean  "is_paid"
+    t.boolean  "is_as_attended"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
   end
 
   create_table "group_members", force: :cascade do |t|
@@ -101,6 +131,24 @@ ActiveRecord::Schema.define(version: 20160113081650) do
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
   end
+
+  create_table "special_holiday_ctgrs", force: :cascade do |t|
+    t.string   "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "special_holidays", force: :cascade do |t|
+    t.string   "title"
+    t.string   "description"
+    t.integer  "special_holiday_ctgr_id"
+    t.boolean  "is_paid"
+    t.boolean  "is_as_attended"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
+  add_index "special_holidays", ["special_holiday_ctgr_id"], name: "index_special_holidays_on_special_holiday_ctgr_id"
 
   create_table "timecards", force: :cascade do |t|
     t.date     "biz_date"

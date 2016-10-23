@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @special_holiday.title %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @special_holiday.description %>
+</p>
+
+<p>
+  <strong>Special holiday ctgr:</strong>
+  <%= @special_holiday.special_holiday_ctgr %>
+</p>
+
+<p>
+  <strong>Is paid:</strong>
+  <%= @special_holiday.is_paid %>
+</p>
+
+<p>
+  <strong>Is as attended:</strong>
+  <%= @special_holiday.is_as_attended %>
+</p>
+
+<%= link_to 'Edit', edit_special_holiday_path(@special_holiday) %> |
+<%= link_to 'Back', special_holidays_path %>

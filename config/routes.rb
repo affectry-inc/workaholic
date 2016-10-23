@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
 
+  resources :special_holidays
+  resources :special_holiday_ctgrs
+  resources :extra_holidays
   # get 'report_submissions/index'
 
   # get 'report_requests/index'

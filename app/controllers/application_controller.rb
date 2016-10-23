@@ -18,7 +18,7 @@ class ApplicationController < ActionController::Base
   end
 
   def require_admin
-    render_404 unless logged_in? && current_user.is_admin
+    render_404 unless logged_in? && current_user.admin
   end
 
   private

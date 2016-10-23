@@ -29,6 +29,7 @@ module AttnMngApp
 
     config.generators do |g|
       g.javascripts false
+      g.tylesheets false
       g.helper false
       g.test_framework false
     end

@@ -1,0 +1,37 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Extra Holidays</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Is hourly</th>
+      <th>Is comment required</th>
+      <th>Is paid</th>
+      <th>Is as attended</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @extra_holidays.each do |extra_holiday| %>
+      <tr>
+        <td><%= extra_holiday.title %></td>
+        <td><%= extra_holiday.description %></td>
+        <td><%= extra_holiday.is_hourly %></td>
+        <td><%= extra_holiday.is_comment_required %></td>
+        <td><%= extra_holiday.is_paid %></td>
+        <td><%= extra_holiday.is_as_attended %></td>
+        <td><%= link_to 'Show', extra_holiday %></td>
+        <td><%= link_to 'Edit', edit_extra_holiday_path(extra_holiday) %></td>
+        <td><%= link_to 'Destroy', extra_holiday, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Extra holiday', new_extra_holiday_path %>

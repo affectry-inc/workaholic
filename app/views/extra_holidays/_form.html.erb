@@ -1,0 +1,41 @@
+<%= form_for(@extra_holiday) do |f| %>
+  <% if @extra_holiday.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@extra_holiday.errors.count, "error") %> prohibited this extra_holiday from being saved:</h2>
+
+      <ul>
+      <% @extra_holiday.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :title %><br>
+    <%= f.text_field :title %>
+  </div>
+  <div class="field">
+    <%= f.label :description %><br>
+    <%= f.text_field :description %>
+  </div>
+  <div class="field">
+    <%= f.label :is_hourly %><br>
+    <%= f.check_box :is_hourly %>
+  </div>
+  <div class="field">
+    <%= f.label :is_comment_required %><br>
+    <%= f.check_box :is_comment_required %>
+  </div>
+  <div class="field">
+    <%= f.label :is_paid %><br>
+    <%= f.check_box :is_paid %>
+  </div>
+  <div class="field">
+    <%= f.label :is_as_attended %><br>
+    <%= f.check_box :is_as_attended %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Special Holidays</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Special holiday ctgr</th>
+      <th>Is paid</th>
+      <th>Is as attended</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @special_holidays.each do |special_holiday| %>
+      <tr>
+        <td><%= special_holiday.title %></td>
+        <td><%= special_holiday.description %></td>
+        <td><%= special_holiday.special_holiday_ctgr %></td>
+        <td><%= special_holiday.is_paid %></td>
+        <td><%= special_holiday.is_as_attended %></td>
+        <td><%= link_to 'Show', special_holiday %></td>
+        <td><%= link_to 'Edit', edit_special_holiday_path(special_holiday) %></td>
+        <td><%= link_to 'Destroy', special_holiday, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Special holiday', new_special_holiday_path %>
