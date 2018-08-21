@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-
+ruby '2.3.3'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.4'
@@ -41,9 +41,11 @@ gem 'bootstrap-switch-rails', '3.3.3'
 #   gem 'rails-assets-bootstrap-fileinput', '4.2.8'
 # end
 
+gem 'pg', '~> 0.15'
+
 group :development, :test do
   # Use sqlite3 as the database for Active Record
-  gem 'sqlite3'
+  # gem 'sqlite3'
 
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
@@ -68,7 +70,6 @@ group :test do
 end
 
 group :production do
-  gem 'pg', '0.17.1'
   gem 'rails_12factor','0.0.2'
-  gem 'puma', '2.11.1'
+  gem 'puma'
 end

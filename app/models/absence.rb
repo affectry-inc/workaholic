@@ -22,6 +22,12 @@
 #  index_absences_on_special_holiday_id  (special_holiday_id)
 #  index_absences_on_timecard_id         (timecard_id)
 #
+# Foreign Keys
+#
+#  fk_rails_...  (extra_holiday_id => extra_holidays.id)
+#  fk_rails_...  (special_holiday_id => special_holidays.id)
+#  fk_rails_...  (timecard_id => timecards.id)
+#
 
 class Absence < ActiveRecord::Base
   belongs_to :timecard

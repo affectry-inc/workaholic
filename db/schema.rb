@@ -13,6 +13,9 @@
 
 ActiveRecord::Schema.define(version: 20161023161440) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "absences", force: :cascade do |t|
     t.integer  "timecard_id"
     t.integer  "absence_type"
@@ -28,9 +31,9 @@ ActiveRecord::Schema.define(version: 20161023161440) do
     t.datetime "updated_at",         null: false
   end
 
-  add_index "absences", ["extra_holiday_id"], name: "index_absences_on_extra_holiday_id"
-  add_index "absences", ["special_holiday_id"], name: "index_absences_on_special_holiday_id"
-  add_index "absences", ["timecard_id"], name: "index_absences_on_timecard_id"
+  add_index "absences", ["extra_holiday_id"], name: "index_absences_on_extra_holiday_id", using: :btree
+  add_index "absences", ["special_holiday_id"], name: "index_absences_on_special_holiday_id", using: :btree
+  add_index "absences", ["timecard_id"], name: "index_absences_on_timecard_id", using: :btree
 
   create_table "approvers", force: :cascade do |t|
     t.integer  "user_id"
@@ -148,7 +151,7 @@ ActiveRecord::Schema.define(version: 20161023161440) do
     t.datetime "updated_at",              null: false
   end
 
-  add_index "special_holidays", ["special_holiday_ctgr_id"], name: "index_special_holidays_on_special_holiday_ctgr_id"
+  add_index "special_holidays", ["special_holiday_ctgr_id"], name: "index_special_holidays_on_special_holiday_ctgr_id", using: :btree
 
   create_table "timecards", force: :cascade do |t|
     t.date     "biz_date"
@@ -179,6 +182,10 @@ ActiveRecord::Schema.define(version: 20161023161440) do
     t.time     "def_rest_end_time"
   end
 
-  add_index "users", ["email"], name: "index_users_on_email", unique: true
+  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
 
+  add_foreign_key "absences", "extra_holidays"
+  add_foreign_key "absences", "special_holidays"
+  add_foreign_key "absences", "timecards"
+  add_foreign_key "special_holidays", "special_holiday_ctgrs"
 end

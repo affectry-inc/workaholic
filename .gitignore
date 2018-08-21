@@ -28,3 +28,5 @@
 
 logfile
 *.swp
+
+.DS_Store

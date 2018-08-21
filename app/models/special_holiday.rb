@@ -15,6 +15,10 @@
 #
 #  index_special_holidays_on_special_holiday_ctgr_id  (special_holiday_ctgr_id)
 #
+# Foreign Keys
+#
+#  fk_rails_...  (special_holiday_ctgr_id => special_holiday_ctgrs.id)
+#
 
 class SpecialHoliday < ActiveRecord::Base
   belongs_to :special_holiday_ctgr
