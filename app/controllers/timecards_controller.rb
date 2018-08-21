@@ -218,6 +218,8 @@ class TimecardsController < ApplicationController
         use_paid_holiday(@timecard.user_id, @timecard.biz_date, 1, 0)
       elsif @timecard.attn_ctgr == 0 && @timecard.paid_holiday_hours > 0
         use_paid_holiday(@timecard.user_id, @timecard.biz_date, 0, @timecard.paid_holiday_hours)
+      else
+        PaidHolidayUsage.delete_all(["user_id = ? and usage_date = ?", @timecard.user_id, @timecard.biz_date])
       end
 
 #      if @timecard.attn_ctgr != 0
